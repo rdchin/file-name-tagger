@@ -46,7 +46,7 @@
 # |        Default Variable Values         |
 # +----------------------------------------+
 #
-VERSION="2021-02-21 18:46"
+VERSION="2021-03-12 15:56"
 THIS_FILE="$0"
 TEMP_FILE=$THIS_FILE"_temp.txt"
 GENERATED_FILE=$THIS_FILE"_menu_generated.lib"
@@ -58,31 +58,26 @@ GENERATED_FILE=$THIS_FILE"_menu_generated.lib"
 #================================================================
 #
 #
-#-------------------------------------------------
-# Set variables to check for network connectivity.
-#-------------------------------------------------
-#
-# Ping Local File Server Repository
-# PING_LAN_TARGET="[FILE SERVER NAME]"
-PING_LAN_TARGET="scotty"
-#
-# Ping Web File Server Repository
-# PING_WAN_TARGET="[WEB FILE REPOSITORY]"
-PING_WAN_TARGET="raw.githubusercontent.com"
-#
 #--------------------------------------------------------------
 # Set variables to mount the Local Repository to a mount-point.
 #--------------------------------------------------------------
 #
 # LAN File Server shared directory.
-SERVER_DIR="//scotty/files"
+# SERVER_DIR="[FILE_SERVER_DIRECTORY_NAME_GOES_HERE]"
+  SERVER_DIR="//scotty/files"
 #
 # Local PC mount-point directory.
-MP_DIR="/mnt/scotty/files"
+# MP_DIR="[LOCAL_MOUNT-POINT_DIRECTORY_NAME_GOES_HERE]"
+  MP_DIR="/mnt/scotty/files"
 #
-# Local PC target directory, sub-directory below mount-point directory.
-# TARGET_DIR="[ LOCAL MOUNT-POINT DIRECTORY/REPOSITORY SUB-DIRECTORY PATH GOES HERE ]"
-TARGET_DIR="/mnt/scotty/files/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"
+# Local PC mount-point with LAN File Server Local Repository full directory path.
+# Example: 
+#                   File server shared directory is "//file_server/public".
+# Repostory directory under the shared directory is "scripts/BASH/Repository".
+#                 Local PC Mount-point directory is "/mnt/file_server/public".
+#
+# LOCAL_REPO_DIR="$MP_DIR/[DIRECTORY_PATH_TO_LOCAL_REPOSITORY]"
+  LOCAL_REPO_DIR="$MP_DIR/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"
 #
 #
 #=================================================================
@@ -98,21 +93,14 @@ TARGET_DIR="/mnt/scotty/files/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projec
 #
 # Temporary file FILE_LIST contains a list of file names of dependent
 # scripts and libraries.
-# Format: [File Name]^[Local/
 #
 FILE_LIST=$THIS_FILE"_file_temp.txt"
 #
 # Format: [File Name]^[Local/Web]^[Local repository directory]^[web repository directory]
-echo "$THIS_FILE^Local^/mnt/scotty/files/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"           > $FILE_LIST
-echo "common_bash_function.lib^Web^/mnt/scotty/files/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository^https://raw.githubusercontent.com/rdchin/BASH_function_library/master/" >> $FILE_LIST
+echo "common_bash_function.lib^Local^$LOCAL_REPO_DIR^https://raw.githubusercontent.com/rdchin/BASH_function_library/master/" >> $FILE_LIST
 #
-# Create a list of files FILE_DL_LIST, which need to be downloaded.
-
-# From FILE_LIST (list of script and library files), find the files which
-# need to be downloaded and put those file names in FILE_DL_LIST.
-#
+# Create a name for a temporary file which will have a list of files which need to be downloaded.
 FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
-# Format: [File Name]^[Local/Web]^[Local repository directory]^[web repository directory]
 #
 # +----------------------------------------+
 # |            Brief Description           |
@@ -175,40 +163,46 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #?                         --hist
 #
 # +----------------------------------------+
+# |                Code Notes              |
+# +----------------------------------------+
+#
+# To disable the [ OPTION ] --update -u to update the script:
+#    1) Comment out the call to function fdl_download_missing_scripts in
+#       Section "Start of Main Program".
+#
+# To completely delete the [ OPTION ] --update -u to update the script:
+#    1) Delete the call to function fdl_download_missing_scripts in
+#       Section "Start of Main Program".
+#    2) Delete all functions beginning with "f_dl"
+#    3) Delete instructions to update script in Section "Help and Usage".
+#
+# To disable the Main Menu:
+#    1) Comment out the call to function f_menu_main under "Run Main Code"
+#       in Section "Start of Main Program".
+#    2) Add calls to desired functions under "Run Main Code"
+#       in Section "Start of Main Program".
+#
+# To completely remove the Main Menu and its code:
+#    1) Delete the call to function f_menu_main under "Run Main Code" in
+#       Section "Start of Main Program".
+#    2) Add calls to desired functions under "Run Main Code"
+#       in Section "Start of Main Program".
+#    3) Delete the function f_menu_main.
+#    4) Delete "Menu Choice Options" in this script located under
+#       Section "Customize Menu choice options below".
+#       The "Menu Choice Options" lines begin with "#@@".
+#
+# +----------------------------------------+
 # |           Code Change History          |
 # +----------------------------------------+
 #
-## Code Notes
-##
-## To disable the [ OPTION ] --update -u to update the script:
-##    1) Comment out the call to function fdl_download_missing_scripts in
-##       Section "Start of Main Program".
-##
-## To completely delete the [ OPTION ] --update -u to update the script:
-##    1) Delete the call to function fdl_download_missing_scripts in
-##       Section "Start of Main Program".
-##    2) Delete all functions beginning with "f_dl"
-##    3) Delete instructions to update script in Section "Help and Usage".
-##
-## To disable the Main Menu:
-##    1) Comment out the call to function f_menu_main under "Run Main Code"
-##       in Section "Start of Main Program".
-##    2) Add calls to desired functions under "Run Main Code"
-##       in Section "Start of Main Program".
-##
-## To completely remove the Main Menu and its code:
-##    1) Delete the call to function f_menu_main under "Run Main Code" in
-##       Section "Start of Main Program".
-##    2) Add calls to desired functions under "Run Main Code"
-##       in Section "Start of Main Program".
-##    3) Delete the function f_menu_main.
-##    4) Delete "Menu Choice Options" in example_library.lib located under
-##       Section "Customize Menu choice options below".
-##       The "Menu Choice Options" lines begin with "#@@".
-##
 ## Code Change History
 ##
 ## (After each edit made, please update Code History and VERSION.)
+##
+## 2021-03-12 *Updated to latest standards and improved comments.
+##            *fdl_download_missing_scripts added 2 arguments for file names
+##             as arguments.
 ##
 ## 2021-02-21 *fdl_download_missing_scripts added to modulize existing code
 ##             under Section "Main Program" to allow easier deletion of code
@@ -218,6 +212,7 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 ##             function is not desired.
 ##            *Section "Code Change History" added instructions on how to
 ##             disable/delete "Update Version" feature or "Main Menu".
+##            *f_check_version fixed bad file name in FILE_LIST.
 ##
 ## 2021-02-13 *Changed menu item wording from "Exit to command-line" prompt.
 ##                                         to "Exit this menu."
@@ -233,12 +228,13 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 ## 2020-11-18 *Alpha Release. Crude working code.
 ##
 ## 2020-11-12 *Start researching how to do it and coding.
+#
 # +------------------------------------+
 # |     Function f_display_common      |
 # +------------------------------------+
 #
-#     Rev: 2021-01-30
-#  Inputs: $1=GUI - "text", "dialog" or "whiptail" the preferred user-interface.
+#     Rev: 2021-03-31
+#  Inputs: $1=UI - "text", "dialog" or "whiptail" the preferred user-interface.
 #          $2=Delimiter of text to be displayed.
 #          $3="NOK", "OK", or null [OPTIONAL] to control display of "OK" button.
 #          $4=Pause $4 seconds [OPTIONAL]. If "NOK" then pause to allow text to be read.
@@ -246,29 +242,32 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #    Uses: X.
 # Outputs: None.
 #
-# PLEASE NOTE: RENAME THIS FUNCTION WITHOUT SUFFIX "_TEMPLATE" AND COPY
-#              THIS FUNCTION INTO ANY SCRIPT WHICH DEPENDS ON THE
-#              LIBRARY FILE "common_bash_function.lib".
+# Synopsis: Display lines of text beginning with a given comment delimiter.
+#
+# Dependencies: f_message.
 #
 f_display_common () {
       #
-      # Specify $THIS_FILE name of the file containing the text to be displayed.
-      # $THIS_FILE may be re-defined inadvertently when a library file defines it
-      # so when the command, source [ LIBRARY_FILE.lib ] is used, $THIS_FILE is
-      # redefined to the name of the library file, LIBRARY_FILE.lib.
+      # Set $THIS_FILE to the file name containing the text to be displayed.
+      #
+      # WARNING: Do not define $THIS_FILE within a library script.
+      #
+      # This prevents $THIS_FILE being inadvertently re-defined and set to
+      # the file name of the library when the command:
+      # "source [ LIBRARY_FILE.lib ]" is used.
+      #
       # For that reason, all library files now have the line
-      # THIS_FILE="[LIBRARY_FILE.lib]" deleted.
+      # THIS_FILE="[LIBRARY_FILE.lib]" commented out or deleted.
       #
       #
-      #================================================================================
-      # EDIT THE LINE BELOW TO DEFINE $THIS_FILE AS THE ACTUAL FILE NAME WHERE THE
-      # ABOUT, CODE HISTORY, AND HELP MESSAGE TEXT IS LOCATED.
-      #================================================================================
+      #==================================================================
+      # EDIT THE LINE BELOW TO DEFINE $THIS_FILE AS THE ACTUAL FILE NAME
+      # CONTAINING THE BRIEF DESCRIPTION, CODE HISTORY, AND HELP MESSAGE.
+      #==================================================================
       #
       #
-                                      #
       THIS_FILE="filename_tagger.sh"  # <<<--- INSERT ACTUAL FILE NAME HERE.
-                                      #
+      #
       TEMP_FILE=$THIS_DIR/$THIS_FILE"_temp.txt"
       #
       # Set $VERSION according as it is set in the beginning of $THIS_FILE.
@@ -283,7 +282,7 @@ f_display_common () {
       # Display text (all lines beginning ("^") with $2 but do not print $2).
       # sed substitutes null for $2 at the beginning of each line
       # so it is not printed.
-      sed --silent "s/$2//p" $THIS_DIR/$THIS_FILE >> $TEMP_FILE
+      sed -n "s/$2//"p $THIS_DIR/$THIS_FILE >> $TEMP_FILE
       #
       case $3 in
            "NOK" | "nok")
@@ -297,100 +296,23 @@ f_display_common () {
 } # End of function f_display_common.
 #
 # +----------------------------------------+
-# |        Function f_check_version        |
-# +----------------------------------------+
-#
-#     Rev: 2021-02-08
-#  Inputs: $1=GUI - "dialog" or "whiptail" The CLI GUI application in use.
-#    Uses: SERVER_DIR, MP_DIR, TARGET_DIR, TARGET_FILE, VERSION, TEMP_FILE, ERROR.
-# Outputs: $1=GUI.
-#          $2=Samba File server Directory
-#          $3=Local Mount Point (Directory)
-#          $4=File server Target Directory.
-#          $5=File server File Name to compare.
-#          $6=Version of file to compare. String$
-#          $7=Temporary file name with list of files to be upgraded.
-#          ERROR
-#
-# PLEASE NOTE: RENAME THIS FUNCTION WITHOUT SUFFIX "_TEMPLATE" AND COPY
-#              THIS FUNCTION INTO ANY SCRIPT WHICH DEPENDS ON THE
-#              LIBRARY FILE "common_bash_function.lib".
-#
-# Synopsis: Check version $6 of $5 local file with version of repository file.
-#           If the repository file has latest version, then copy all 
-#           dependent files and libraries from the repository to local PC. 
-#
-f_check_version () {
-      #
-      #
-      #=================================================================
-      # EDIT THE LINES BELOW TO DEFINE THE LAN FILE SERVER DIRECTORY AND
-      # SHARED MOUNTPOINT DIRECTORY, LOCAL TARGET DIRECTORY AND FILE. 
-      #=================================================================
-      #
-      #
-      # LAN File Server shared directory.
-      SERVER_DIR="//scotty/files"
-      #
-      # Local PC mount-point directory.
-      MP_DIR="/mnt/scotty/files"
-      #
-      # Local PC target directory, sub-directory below mount-point directory.
-      TARGET_DIR="/mnt/scotty/files/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"
-      #
-      # Local PC file within TARGET_DIR.
-      FILE_TO_COMPARE="filename_tagger.sh"
-      #
-      # Version of TARGET_FILE.
-      VERSION=$(grep --max-count=1 "VERSION" $FILE_TO_COMPARE)
-      #
-      FILE_LIST=$THIS_DIR/$THIS_FILE"_file_temp.txt"
-      ERROR=0
-      #
-      #
-      #=================================================================
-      # EDIT THE LINES BELOW TO SPECIFY THE FILE NAMES TO UPDATE.
-      # FILE NAMES INCLUDE ALL DEPENDENT SCRIPTS LIBRARIES.
-      #=================================================================
-      #
-      #
-      # Create list of files to update and write to temporary file, FILE_LIST.
-      #
-      echo "filename_tagger" > $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
-      echo "common_bash_function.lib^Web^/mnt/scotty/files/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository^https://raw.githubusercontent.com/rdchin/BASH_function_library/master/" >> $FILE_LIST
-      #
-      f_version_compare $1 $SERVER_DIR $MP_DIR $TARGET_DIR $FILE_TO_COMPARE "$VERSION" $FILE_LIST
-      #
-      if [ -r  $FILE_LIST ] ; then
-         rm  $FILE_LIST
-      fi
-      #
-}  # End of function f_check_version.
-#
-# +----------------------------------------+
 # |          Function f_menu_main          |
 # +----------------------------------------+
 #
-#     Rev: 2021-01-30
-#  Inputs: $1=GUI.
+#     Rev: 2021-03-07
+#  Inputs: $1 - "text", "dialog" or "whiptail" the preferred user-interface.
 #    Uses: ARRAY_FILE, GENERATED_FILE, MENU_TITLE.
 # Outputs: None.
 #
-# PLEASE NOTE: RENAME THIS FUNCTION WITHOUT SUFFIX "_TEMPLATE" AND COPY
-#              THIS FUNCTION INTO THE MAIN SCRIPT WHICH WILL CALL IT.
+# Summary: Display Main-Menu.
+#          This Main Menu function checks its script for the Main Menu
+#          options delimited by "#@@" and if it does not find any, then
+#          it it defaults to the specified library script.
+#
+# Dependencies: f_menu_arrays, f_create_show_menu.
 #
 f_menu_main () { # Create and display the Main Menu.
       #
-      #
-      #================================================================================
-      # EDIT THE LINE BELOW TO DEFINE $THIS_FILE AS THE ACTUAL FILE NAME WHERE THE
-      # ABOUT, CODE HISTORY, AND HELP MESSAGE TEXT IS LOCATED.
-      #================================================================================
-      #
-      #
-                                      #
-      THIS_FILE="filename_tagger.sh"  # <<<--- INSERT ACTUAL FILE NAME HERE.
-                                      #
       GENERATED_FILE=$THIS_DIR/$THIS_FILE"_menu_main_generated.lib"
       #
       # Does this file have menu items in the comment lines starting with "#@@"?
@@ -418,7 +340,7 @@ f_menu_main () { # Create and display the Main Menu.
          #
          # Specify library file name with menu item data.
          # ARRAY_FILE="[FILENAME_GOES_HERE]"
-         ARRAY_FILE="$THIS_DIR/$THIS_FILE"
+           ARRAY_FILE="$THIS_DIR/filename_tagger.lib"
       fi
       #
       # Create arrays from data.
@@ -434,7 +356,7 @@ f_menu_main () { # Create and display the Main Menu.
       #       ***the size of the menu window will be too narrow.
       #
       # Menu title MUST use underscores instead of spaces.
-      MENU_TITLE="CLI_Action_Menu"  # Menu title must substitute underscores for spaces
+      MENU_TITLE="Tagger_Menu"
       TEMP_FILE=$THIS_DIR/$THIS_FILE"_menu_main_temp.txt"
       #
       f_create_show_menu $1 $GENERATED_FILE $MENU_TITLE $MAX_LENGTH $MAX_LINES $MAX_CHOICE_LENGTH $TEMP_FILE
@@ -450,185 +372,141 @@ f_menu_main () { # Create and display the Main Menu.
 } # End of function f_menu_main.
 #
 # +----------------------------------------+
-# |       Function fdl_choose_dl_source      |
+# |  Function fdl_dwnld_file_from_web_site |
 # +----------------------------------------+
 #
-#     Rev: 2020-10-22
-#  Inputs: $1="Web" or "Local".
-#          $2=file to download.
-# Outputs: ANS.
-#
-fdl_choose_dl_source () {
-      #
-      DL_FILE=$(echo $DL_LINE | awk -F "^" '{ print $1 }')
-      DL_SOURCE=$(echo $DL_LINE | awk -F "^" '{ print $2 }')
-      # Format [File name]^[Local/Web]
-      DL_LINE=$(echo $DL_LINE | awk -F "^" '{ print $1"^"$2}')
-      #
-      fdl_choose_download_source $DL_SOURCE $DL_FILE
-      # Insert ANS into FILE_DL_LIST.
-      # Substitute DL_LINE_NEW for DL_LINE.
-      # ANS [Local/Web] is the project's download choice for all project files.
-      # ANS will over-write any existing value [Local/Web] for each project file.
-      # Substitute ANS for existing value whether "Local" or "Web".
-      DL_LINE_NEW=${DL_LINE/$DL_FILE^Local/$DL_FILE^$ANS}
-      DL_LINE_NEW=${DL_LINE/$DL_FILE^Web/$DL_FILE^$ANS}
-      #
-      # Change or substitute new ANS or download choice into download file list.
-      sed -i "s/$DL_LINE/$DL_LINE_NEW/" $FILE_DL_LIST
-      #
-} # End of function fdl_choose_dl_source.
-#
-# +----------------------------------------+
-# |    Function fdl_choose_download_source   |
-# +----------------------------------------+
-#
-#     Rev: 2020-10-22
-#  Inputs: $1="Web" or "Local".
-#          $2=file to download.
-# Outputs: ANS.
-#
-fdl_choose_download_source () {
-      #
-      # Is $1 specified or "local"?
-      ANS=""
-      if [ $1 != "Local" ] ; then
-         while [ "$ANS" = "" ]
-               do
-                  echo
-                  echo "Do you want to download the file: $2"
-                  echo -n "from the web repository? (W)eb or the local repository (L)ocal ($1):" ; read ANS
-                  case $ANS in
-                       [Ww])
-                          ANS="Web"
-                       ;;
-                       [Ll] | "")
-                          ANS="Local"
-                       ;;
-                       *)
-                          ANS="$1"
-                       ;;
-                  esac
-               done
-      else
-         # If "Local" download source, do not give a choice, use Local Repository for download.
-         ANS="Local"
-      fi
-      #
-} # End of function fdl_choose_download_source.
-#
-# +----------------------------------------+
-# |      fdl_dwnld_library_from_web_site     |
-# +----------------------------------------+
-#
-#     Rev: 2021-01-30
+#     Rev: 2021-03-08
 #  Inputs: $1=GitHub Repository
 #          $2=file name to download.
-#          $3=ERROR.
 #    Uses: None.
 # Outputs: None.
 #
-# PLEASE NOTE: RENAME THIS FUNCTION WITHOUT SUFFIX "_TEMPLATE" AND COPY
-#              THIS FUNCTION INTO ANY SCRIPT WHICH DEPENDS ON THE
-#              LIBRARY FILE "common_bash_function.lib".
+# Summary: Download a list of file names from a web site.
+#          Cannot be dependent on "common_bash_function.lib" as this library
+#          may not yet be available and may need to be downloaded.
 #
-fdl_dwnld_library_from_web_site () {
+# Dependencies: wget.
+#
+#
+fdl_dwnld_file_from_web_site () {
       #
-      ERROR=$3
-      #
-      if [ $ERROR -eq 0 ] ; then
-         # $1 ends with a slash "/" so can append $2 immediately after $1.
-         wget --show-progress $1$2
-         ERROR=$?
-         if [ $ERROR -ne 0 ] ; then
+      # $1 ends with a slash "/" so can append $2 immediately after $1.
+      echo
+      echo ">>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<"
+      echo ">>> Download file from Web Repository <<<"
+      echo ">>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<"
+      echo
+      wget --show-progress $1$2
+      ERROR=$?
+      if [ $ERROR -ne 0 ] ; then
             echo
-            echo "!!! wget download failed !!!"
-            echo "from GitHub.com for file: $2"
+            echo ">>>>>>>>>>>>>><<<<<<<<<<<<<<"
+            echo ">>> wget download failed <<<"
+            echo ">>>>>>>>>>>>>><<<<<<<<<<<<<<"
             echo
-            echo "Cannot continue, exiting program script."
-            sleep 3
-            exit 1  # Exit with error.
+            echo "Error copying from Web Repository file: \"$2.\""
+            echo
+      else
+         # Make file executable (useable).
+         chmod +x $2
+         #
+         if [ -x $2 ] ; then
+            # File is good.
+            ERROR=0
+         else
+            echo
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo ">>> File Error after download from Web Repository <<<"
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo
+            echo "$2 is missing or file is not executable."
+            echo
          fi
-         #
-         # Make downloaded file executable.
-         chmod 755 $2
-         #
-         echo
-         echo ">>> Please run program again after download. <<<"
-         echo
-         # Delay to read messages on screen.
-         echo -n "Press \"Enter\" key to continue" ; read X
-         #
       fi
       #
-} # End of function fdl_dwnld_library_from_web_site.
+      # Make downloaded file executable.
+      chmod 755 $2
+      #
+} # End of function fdl_dwnld_file_from_web_site.
 #
-# +------------------------------------------+
-# |   fdl_dwnld_library_from_local_repository  |
-# +------------------------------------------+
+# +-----------------------------------------------+
+# | Function fdl_dwnld_file_from_local_repository |
+# +-----------------------------------------------+
 #
-#     Rev: 2021-01-30
+#     Rev: 2021-03-08
 #  Inputs: $1=Local Repository Directory.
 #          $2=File to download.
-#          $3=ERROR.
-#    Uses: TEMP_FILE, SMBUSER, PASSWORD, ERROR.
-# Outputs: TEMP_FILE.
+#    Uses: TEMP_FILE.
+# Outputs: ERROR.
 #
-# This is used to download any file with a text-only UI.
-# This can be used to download the Common Function Library.
-# Used to download any file before the Common Library is even downloaded.
+# Summary: Copy a file from the local repository on the LAN file server.
+#          Cannot be dependent on "common_bash_function.lib" as this library
+#          may not yet be available and may need to be downloaded.
 #
-fdl_dwnld_library_from_local_repository () {
+# Dependencies: None.
+#
+fdl_dwnld_file_from_local_repository () {
       #
-      ERROR=$3
-      #
-      if [ $ERROR -eq 0 ] ; then
-         eval cp -p $1/$2 .
-         ERROR=$?
-         #
-         if [ $ERROR -ne 0 ] ; then
-            echo
-            echo -e "Error occurred\nError copying $2."
-            sleep 2
-            ERROR=1
-         else
-            # Make file executable (useable).
-            chmod +x $2
-            #
-            if [ -x $2 ] ; then
-               # File is good.
-               ERROR=0
-            else
-               echo
-               echo "File Error"
-               echo -e "$2 is missing or file is not executable.\n\nCannot continue, exiting program script."
-               sleep 3
-               ERROR=1
-            fi
-         fi
-      fi
+      echo
+      echo ">>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<"
+      echo ">>> File Copy from Local Repository <<<"
+      echo ">>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<"
+      echo
+      eval cp -p $1/$2 .
+      ERROR=$?
       #
       if [ $ERROR -ne 0 ] ; then
          echo
-         echo -e "Error occurred\nError copying $2."
-      else
+         echo ">>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<"
+         echo ">>> File Copy Error from Local Repository <<<"
+         echo ">>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<"
          echo
-         echo -e "Successful Update of $2 to latest version.\n\nScript must be re-started to use the latest version."
+         echo -e "Error copying from Local Repository file: \"$2.\""
+         echo
+         ERROR=1
+      else
+         # Make file executable (useable).
+         chmod +x $2
+         #
+         if [ -x $2 ] ; then
+            # File is good.
+            ERROR=0
+         else
+            echo
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo ">>> File Error after copy from Local Repository <<<"
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo
+            echo -e "File \"$2\" is missing or file is not executable."
+            echo
+            ERROR=1
+         fi
+      fi
+      #
+      if [ $ERROR -eq 0 ] ; then
+         echo
+         echo -e "Successful Update of file \"$2\" to latest version.\n\nScript must be re-started to use the latest version."
          echo "____________________________________________________"
       fi
       #
-} # End of function fdl_dwnld_library_from_local_repository.
+} # End of function fdl_dwnld_file_from_local_repository.
 #
-# +------------------------------------------+
-# |               fdl_mount_local              |
-# +------------------------------------------+
+# +-------------------------------------+
+# |       Function fdl_mount_local      |
+# +-------------------------------------+
 #
-#     Rev: 2021-01-30
+#     Rev: 2021-03-10
 #  Inputs: $1=Server Directory.
 #          $2=Local Mount Point Directory
 #          TEMP_FILE
-#    Uses: TARGET_DIR, UPDATE_FILE, ERROR.
+#    Uses: TARGET_DIR, UPDATE_FILE, ERROR, SMBUSER, PASSWORD.
 # Outputs: ERROR.
+#
+# Summary: Mount directory using Samba and CIFS and echo error message.
+#          Cannot be dependent on "common_bash_function.lib" as this library
+#          may not yet be available and may need to be downloaded.
+#
+# Dependencies: Software package "cifs-utils" in the Distro's Repository.
 #
 fdl_mount_local () {
       #
@@ -637,62 +515,354 @@ fdl_mount_local () {
       ERROR=$?
       if [ $ERROR -ne 0 ] ; then
          # Mount directory.
+         # Cannot use any user prompted read answers if this function is in a loop where file is a loop input.
+         # The read statements will be treated as the next null parameters in the loop without user input.
+         # To solve this problem, specify input from /dev/tty "the keyboard".
+         #
          echo
-         read -p "Enter user name: " SMBUSER
+         read -p "Enter user name: " SMBUSER < /dev/tty
          echo
-         read -s -p "Enter Password: " PASSWORD
-         echo
+         read -s -p "Enter Password: " PASSWORD < /dev/tty
+         echo sudo mount -t cifs $1 $2
          sudo mount -t cifs -o username="$SMBUSER" -o password="$PASSWORD" $1 $2
          mountpoint $2 >/dev/null 2>$TEMP_FILE # Write any error messages to file $TEMP_FILE. Get status of mountpoint, mounted?.
          ERROR=$?
          if [ $ERROR -ne 0 ] ; then
             echo
-            echo "Mount failure"
+            echo ">>>>>>>>>><<<<<<<<<<<"
+            echo ">>> Mount failure <<<"
+            echo ">>>>>>>>>><<<<<<<<<<<"
             echo
-            echo "Directory mount-point $2 is not mounted."
+            echo -e "Directory mount-point \"$2\" is not mounted."
             echo
             echo -e "Mount using Samba failed. Are \"samba\" and \"cifs-utils\" installed?"
+            echo "------------------------------------------------------------------------"
             echo
-            echo -e "Press \"Enter\" key to continue."
          fi
          unset SMBUSER PASSWORD
       fi
       #
 } # End of function fdl_mount_local.
 #
-# +----------------------------------------+
-# |             Function f_source          |
-# +----------------------------------------+
+# +------------------------------------+
+# |        Function fdl_source         |
+# +------------------------------------+
 #
-#     Rev: 2020-10-22
+#     Rev: 2021-03-10
 #  Inputs: $1=File name to source.
-# Outputs: ANS.
+# Outputs: ERROR.
 #
-f_source () {
+# Summary: Source the provided library file and echo error message.
+#          Cannot be dependent on "common_bash_function.lib" as this library
+#          may not yet be available and may need to be downloaded.
+#
+# Dependencies: None.
+#
+fdl_source () {
       #
       if [ -x "$1" ] ; then
          # If $1 is a library, then source it.
          case $1 in
-              common_bash_function.lib)
-                 source $1
-              ;;
               *.lib)
                  source $1
+                 ERROR=$?
+                 #
+                 if [ $ERROR -ne 0 ] ; then
+                    echo
+                    echo ">>>>>>>>>><<<<<<<<<<<"
+                    echo ">>> Library Error <<<"
+                    echo ">>>>>>>>>><<<<<<<<<<<"
+                    echo
+                    echo -e "$1 cannot be sourced using command:\n\"source $1\""
+                    echo
+                 fi
               ;;
          esac
+         #
       fi
       #
-} # End of function f_source.
+} # End of function fdl_source.
 #
 # +----------------------------------------+
-# |    Function f_select_target_directory  |
+# |  Function fdl_download_missing_scripts |
 # +----------------------------------------+
 #
-#  Inputs: $1=GUI
+#     Rev: 2021-03-11
+#  Inputs: $1 - File containing a list of all file dependencies.
+#          $2 - File name of generated list of missing file dependencies.
+# Outputs: ANS.
+#
+# Summary: This function can be used when script is first run.
+#          It verifies that all dependencies are satisfied. 
+#          If any are missing, then any missing required dependencies of
+#          scripts and libraries are downloaded from a LAN repository or
+#          from a repository on the Internet.
+#
+#          This function allows this single script to be copied to any
+#          directory and then when it is executed or run, it will download
+#          automatically all other needed files and libraries, set them to be
+#          executable, and source the required libraries.
+#          
+#          Cannot be dependent on "common_bash_function.lib" as this library
+#          may not yet be available and may need to be downloaded.
+#
+# Dependencies: None.
+#
+fdl_download_missing_scripts () {
+      #
+      # Delete any existing temp file.
+      if [ -r  $2 ] ; then
+         rm  $2
+      fi
+      #
+      # ****************************************************
+      # Create new list of files that need to be downloaded.
+      # ****************************************************
+      #
+      # While-loop will read the file names listed in FILE_LIST (list of
+      # script and library files) and detect which are missing and need 
+      # to be downloaded and then put those file names in FILE_DL_LIST.
+      #
+      while read LINE
+            do
+               FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
+               if [ ! -x $FILE ] ; then
+                  # File needs to be downloaded or is not executable
+                  chmod +x $FILE 2>$TEMP_FILE # Write any error messages to file $TEMP_FILE.
+                  ERROR=$?
+                  if [ $ERROR -ne 0 ] ; then
+                     # File needs to be downloaded. Add file name to a file list in a text file.
+                     # Build list of files to download.
+                     echo $LINE >> $2
+                  fi
+               fi
+            done < $1
+      #
+      # If there are files to download (listed in FILE_DL_LIST), then mount local repository.
+      if [ -s "$2" ] ; then
+         echo
+         echo "There are missing file dependencies which must be downloaded from"
+         echo "the local repository or web repository."
+         echo
+         echo "Missing files:"
+         while read LINE
+               do
+                  echo $LINE | awk -F "^" '{ print $1 }'
+               done < $2
+         echo
+         echo "You will need to present credentials."
+         echo
+         echo -n "Press '"Enter"' key to continue." ; read X ; unset X
+         #
+         #----------------------------------------------------------------------------------------------
+         # From list of files to download created above $FILE_DL_LIST, download the files one at a time.
+         #----------------------------------------------------------------------------------------------
+         #
+         while read LINE
+               do
+                  # Get Download Source for each file.
+                  DL_FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
+                  DL_SOURCE=$(echo $LINE | awk -F "^" '{ print $2 }')
+                  TARGET_DIR=$(echo $LINE | awk -F "^" '{ print $3 }')
+                  DL_REPOSITORY=$(echo $LINE | awk -F "^" '{ print $4 }')
+                  #
+                  # Initialize Error Flag.
+                  ERROR=0
+                  #
+                  # If a file only found in the Local Repository has source changed
+                  # to "Web" because LAN connectivity has failed, then do not download.
+                  if [ -z DL_REPOSITORY ] && [ $DL_SOURCE = "Web" ] ; then
+                     ERROR=1
+                  fi
+                  #
+                  case $DL_SOURCE in
+                       Local)
+                          # Download from Local Repository on LAN File Server.
+                          # Are LAN File Server directories available on Local Mount-point?
+                          fdl_mount_local $SERVER_DIR $MP_DIR
+                          #
+                          if [ $ERROR -ne 0 ] ; then
+                             # Failed to mount LAN File Server directory on Local Mount-point.
+                             # So download from Web Repository.
+                             fdl_dwnld_file_from_web_site $DL_REPOSITORY $DL_FILE
+                          else
+                             # Sucessful mount of LAN File Server directory. 
+                             # Continue with download from Local Repository on LAN File Server.
+                             fdl_dwnld_file_from_local_repository $TARGET_DIR $DL_FILE
+                             #
+                             if [ $ERROR -ne 0 ] ; then
+                                # Failed to download from Local Repository on LAN File Server.
+                                # So download from Web Repository.
+                                fdl_dwnld_file_from_web_site $DL_REPOSITORY $DL_FILE
+                             fi
+                          fi
+                       ;;
+                       Web)
+                          # Download from Web Repository.
+                          fdl_dwnld_file_from_web_site $DL_REPOSITORY $DL_FILE
+                          if [ $ERROR -ne 0 ] ; then
+                             # Failed so mount LAN File Server directory on Local Mount-point.
+                             fdl_mount_local $SERVER_DIR $MP_DIR
+                             #
+                             if [ $ERROR -eq 0 ] ; then
+                                # Successful mount of LAN File Server directory.
+                                # Continue with download from Local Repository on LAN File Server.
+                                fdl_dwnld_file_from_local_repository $TARGET_DIR $DL_FILE
+                             fi
+                          fi
+                       ;;
+                  esac
+               done < $2
+         #
+         if [ $ERROR -ne 0 ] ; then
+            echo
+            echo
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo ">>> Download failed. Cannot continue, exiting program. <<<"
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo
+         else
+            echo
+            echo
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo ">>> Download is good. Re-run required, exiting program. <<<"
+            echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+            echo
+         fi
+         #
+      fi
+      #
+      # Source each library.
+      #
+      while read LINE
+            do
+               FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
+               # Invoke any library files.
+               fdl_source $FILE
+               if [ $ERROR -ne 0 ] ; then
+                  echo
+                  echo ">>>>>>>>>><<<<<<<<<<<"
+                  echo ">>> Library Error <<<"
+                  echo ">>>>>>>>>><<<<<<<<<<<"
+                  echo
+                  echo -e "$1 cannot be sourced using command:\n\"source $1\""
+                  echo
+               fi
+            done < $1
+      if [ $ERROR -ne 0 ] ; then
+         echo
+         echo
+         echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+         echo ">>> Invoking Libraries failed. Cannot continue, exiting program. <<<"
+         echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+         echo
+      fi
+      #
+} # End of function fdl_download_missing_scripts.
+#
+# +----------------------------------------+
+# |        Function f_check_version        |
+# +----------------------------------------+
+#
+#     Rev: 2021-03-25
+#  Inputs: $1 - UI "dialog" or "whiptail" or "text".
+#          $2 - [OPTIONAL] File name to compare.
+#          FILE_TO_COMPARE.
+#    Uses: SERVER_DIR, MP_DIR, TARGET_DIR, TARGET_FILE, VERSION, TEMP_FILE, ERROR.
+# Outputs: ERROR.
+#
+# Summary: Check the version of a single, local file or script,
+#          FILE_TO_COMPARE with the version of repository file.
+#          If the repository file has latest version, then copy all 
+#          dependent files and libraries from the repository to local PC.
+#
+# TO DO enhancement: If local (LAN) repository is unavailable, then
+#          connect to repository on the web if available.
+#
+# Dependencies: f_version_compare.
+#
+f_check_version () {
+      #
+      #
+      #=================================================================
+      # EDIT THE LINES BELOW TO DEFINE THE LAN FILE SERVER DIRECTORY,
+      # LOCAL MOUNTPOINT DIRECTORY, LOCAL REPOSITORY DIRECTORY AND
+      # FILE TO COMPARE BETWEEN THE LOCAL PC AND (LAN) LOCAL REPOSITORY.
+      #=================================================================
+      #
+      #
+      # LAN File Server shared directory.
+      # SERVER_DIR="[FILE_SERVER_DIRECTORY_NAME_GOES_HERE]"
+        SERVER_DIR="//scotty/files"
+      #
+      # Local PC mount-point directory.
+      # MP_DIR="[LOCAL_MOUNT-POINT_DIRECTORY_NAME_GOES_HERE]"
+        MP_DIR="/mnt/scotty/files"
+      #
+      # Local PC mount-point with LAN File Server Local Repository full directory path.
+      # Example: 
+      #                   File server shared directory is "//file_server/public".
+      # Repository directory under the shared directory is "scripts/BASH/Repository".
+      #                 Local PC Mount-point directory is "/mnt/file_server/public".
+      #
+      # Local PC mount-point with LAN File Server Local Repository full directory path.
+      # LOCAL_REPO_DIR="$MP_DIR/[DIRECTORY_PATH_TO_LOCAL_REPOSITORY]"
+        LOCAL_REPO_DIR="$MP_DIR/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"
+      #
+      # Local PC file to be compared.
+      if [ $# -eq 2 ] ; then
+         # There are 2 arguments that have been passed to this function.
+         # $2 contains the file name to compare.
+         FILE_TO_COMPARE=$2
+      else
+         # $2 is null, so specify file name.
+         if [ -z "$FILE_TO_COMPARE" ] ; then
+            # FILE_TO_COMPARE is undefined so specify file name.
+            FILE_TO_COMPARE=$(basename $0)
+         fi
+      fi
+      #
+      # Version of Local PC file to be compared.
+      VERSION=$(grep --max-count=1 "VERSION" $FILE_TO_COMPARE)
+      #
+      FILE_LIST=$THIS_DIR/$THIS_FILE"_file_temp.txt"
+      ERROR=0
+      #
+      #
+      #=================================================================
+      # EDIT THE LINES BELOW TO SPECIFY THE FILE NAMES TO UPDATE.
+      # FILE NAMES INCLUDE ALL DEPENDENT SCRIPTS AND LIBRARIES.
+      #=================================================================
+      #
+      #
+      # Create list of files to update and write to temporary file, FILE_LIST.
+      #
+      echo "filename_tagger.sh"        > $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
+      echo "common_bash_function.lib" >> $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
+      #
+      f_version_compare $1 $SERVER_DIR $MP_DIR $LOCAL_REPO_DIR $FILE_TO_COMPARE "$VERSION" $FILE_LIST
+      #
+      if [ -r  $FILE_LIST ] ; then
+         rm  $FILE_LIST
+      fi
+      #
+}  # End of function f_check_version.
+#
+# +----------------------------------------+
+# |          Function f_select_dir         |
+# +----------------------------------------+
+#
+#  Inputs: $1=GUI, THIS_DIR.
+#          $2=String "[City/Town] Directory"
+#          $3=Default parent directory.
 #    Uses: TEMP_FILE, ANS, ERROR, SCRIPT_LIST.
-# Outputs: TARGET_DIR.
+# Outputs: ANS (List of selected files), ERROR.
 #
-f_select_target_directory () {
+# Summary: Prompt user-entered file name.
+#
+# Dependencies: f_yn_question, f_message.
+#
+f_select_dir () {
       #
       # Get the screen resolution or X-window size.
       # Get rows (height).
@@ -700,46 +870,76 @@ f_select_target_directory () {
       # Get columns (width).
       XSCREEN=$(stty size | awk '{ print $2 }')
       #
+      # Reset ERROR for while-loop to work.
+      ERROR=0
+      #
+      # Initialize variables.
+      DIR=""
+      ANS=""
+      #
+      # Format string substitute underscores for spaces.
+      DIR_STR=$(echo $2 | tr "_" " ")
+      #
       case $1 in
            dialog)
+              while [ "$ERROR" -eq 0 ]
+                    do
+                       # Dialog needs about 6 more lines for the header and [OK] button.
+                       let Y=$YSCREEN-16
+                       # If number of lines exceeds screen/window height then set textbox height.
+                       #
+                       # Dialog needs about 10 more spaces for the right and left window frame.
+                       let X=$XSCREEN-10
+                       #
+                       DIR=$($1 --stdout --title "Use <tab>, <up/down arrows> and <spacebar> to select a $DIR_STR." --backtitle "Please choose a $DIR_STR" --ok-label "Choose $DIR_STR" --cancel-label "Done choosing" --dselect $3 $Y $X)
+                       ERROR=$?
+                       #
+                       if [ "$ERROR" -eq 0 ] && [ -d $DIR ] ; then
+                          f_yn_question $1 "Y" "Confirm $DIR_STR name" "$DIR_STR name: $DIR\n\nIs the $DIR_STR name correct?"
+                          #
+                          if [ "$ANS" -ne 1 ] ; then
+                             # Yes, $DIR_STR name is correct. Note: $DIR includes "Directory Name".
+                             # Output selected Directory Name to $ANS.
+                             ANS=$DIR
+                             #
+                             f_message $1 "NOK" "Directory Entered" "Directory name accepted. Enter next directory name or press \"Exit\" button.\n\n$DIR" 2
+                          fi
+                       fi
+                    done
               #
-              # Dialog needs about 6 more lines for the header and [OK] button.
-              let Y=$YSCREEN-16
-              # If number of lines exceeds screen/window height then set textbox height.
-              #
-              # Dialog needs about 10 more spaces for the right and left window frame. 
-              let X=$XSCREEN-10
-              #
-              TARGET_DIR=$($1 --stdout --title "Use <tab>, <up/down arrows> and <spacebar> to select a directory." --backtitle "Please choose a directory" --cancel-label "Exit" --fselect $THIS_DIR $Y $X)
-              ERROR=$?
+              # Reset ERROR since on exiting WHILE-loop it will always be EXIT=1.
+              ERROR=0
               #
            ;;
            whiptail)
-              # User-input via "inputbox" free-form TARGET_DIR name entry.
-              $1 --title "User-entered Directory" --cancel-button "Exit" --inputbox "Enter Target Directory name:" 8 70 2>$TEMP_FILE
+              # User-input via "inputbox" free-form directory name entry.
+              $1 --title "User-entered $DIR_STR" --cancel-button "Exit" --inputbox "Enter $DIR_STR name:" 8 70 $3 2>$TEMP_FILE
               ERROR=$?
-              TARGET_DIR=$(cat $TEMP_FILE)
+              ANS=$(cat $TEMP_FILE)
               #
            ;;
            text)
               ERROR=0
-              echo "Enter Target Directory Name"
+              # The user-entered directory name is whatever is after $3 default parent directory.
+              echo "User-entered $DIR_STR name"
               echo
-              echo -n "Enter Target Directory name: "
-              read TARGET_DIR
-              if [ -z "$TARGET_DIR" ] ; then
-                 # Force exit script.
+              echo -n "Enter $DIR_STR name(s): $3/"
+              read ANS
+              #
+              # String $3 includes a trailing "/".
+              ANS=$3$ANS
+              #
+              if [ -z "$ANS" ] ; then
                  ERROR=1
               fi
            ;;
       esac
       #
-      if [ $ERROR -eq 1 ] ; then
-         #f_exit_script $1
+      if [ "$ERROR" -eq 1 ] ; then
          return 1  # Return to Main Menu.
       fi
       #
-} # End of function f_project_process_user_files
+} # End of function f_select_dir.
 #
 # +----------------------------------------+
 # |             Function f_tagger          |
@@ -752,16 +952,29 @@ f_select_target_directory () {
 #
 f_tagger () {
       #
-      unset TARGET_DIR
+      unset TARGET_DIR      
+      #
+      # Define TARGET_DIR
+      TARGET_DIR="TARGET_DIR"
       #
       # If there is no target directory specified, ask for directory.
-      TARGET_DIR=$2
-      #
-      if [ -z $TARGET_DIR ] ; then
-         f_select_target_directory $1
+      if [ -d "$2" ] ; then
+         TARGET_DIR=$2
+      else
+         f_select_dir $1 "Target_Directory" "/home"
+         #
+         # Set TARGET_DIR to the selected directory.
+         TARGET_DIR=$ANS
       fi
       #
       if [ $ERROR -eq 1 ] ; then
+         return 1  # Return to Main Menu.
+      fi
+      #
+      # Does the directory exist?
+      if [ ! -d "$TARGET_DIR" ] ; then
+         # No, directory does not exist.
+         f_message $1 "OK" "Directory Error" "$DIR_STR does not exist.\n\n$TARGET_DIR"
          return 1  # Return to Main Menu.
       fi
       #
@@ -769,7 +982,7 @@ f_tagger () {
       ls $TARGET_DIR > $TEMP_FILE
       #
       # Create diagnostic log file of output.
-      #TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt  # Diagnostic line.
+      TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt"
       #
       # Exclude shell script filenames *.sh by deleting them from $TEMP_FILE.
       sed -i '/\.sh$/d' $TEMP_FILE
@@ -852,17 +1065,33 @@ f_tagger () {
                   NEW_FILE_NAME=$NEWTAG"--TAGS--"$FILE_NO_TAGS
                fi
                #
+               # Initialize ERR, ERROR.
+               ERROR=0
+               ERR=0
+               #
+               # Clear TEMP_FILE2.
+               echo "Error Log" > $TEMP_FILE2
+               #
                # Rename file with tag names.
                if [ "$NEW_FILE_NAME" != "$FILE" ] ; then
-                  #echo >>$TEMP_FILE2  # Diagnostic line.
-                  #echo "---------------------------------" >>$TEMP_FILE2  # Diagnostic line.
-                  #echo "ORIG=$TARGET_DIR$FILE"          >>$TEMP_FILE2  # Diagnostic line.
-                  #echo "NEW =$TARGET_DIR$NEW_FILE_NAME" >>$TEMP_FILE2  # Diagnostic line.
-                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME
+                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME 2> $TEMP_FILE2
+                  ERROR=$?
+                  if [ $ERROR -ne 0 ] ; then
+                     let ERR=$ERR+1
+                  fi
                fi
                # End of file name list?
                # No, get next file name.
             done < $TEMP_FILE
+            #
+            # Were there any errors renaming files?
+            if [ $ERR -ne 0 ] ; then
+            f_message $1 "OK" "List Error Messages" $TEMP_FILE2
+            fi
+            #
+            # View TARGET_DIR.
+            ls $TARGET_DIR > $TEMP_FILE
+            f_message $1 "OK" "List tagged $TARGET_DIR" $TEMP_FILE
             #
             unset TARGET_DIR
             #
@@ -881,15 +1110,28 @@ f_untagger () {
       #
       unset TARGET_DIR
       #
-      # If there is no target directory specified, ask for directory.
-      TARGET_DIR=$2
+      # Define TARGET_DIR
+      TARGET_DIR=""
       #
-      if [ -z $TARGET_DIR ] ;
-       then
-         f_select_target_directory $1
+      # If there is no target directory specified, ask for directory.
+      if [ -d "$2" ] ; then
+         TARGET_DIR=$2
+      else
+         #f_select_target_directory $1
+         f_select_dir $1 "Target_Directory" "/home"
+         #
+         # Set TARGET_DIR to the selected directory.
+         TARGET_DIR=$ANS
       fi
       #
       if [ $ERROR -eq 1 ] ; then
+         return 1  # Return to Main Menu.
+      fi
+      #
+      # Does the directory exist?
+      if [ ! -d "$TARGET_DIR" ] ; then
+         # No, directory does not exist.
+         f_message $1 "OK" "Directory Error" "$DIR_STR does not exist.\n\n$TARGET_DIR"
          return 1  # Return to Main Menu.
       fi
       #
@@ -897,7 +1139,7 @@ f_untagger () {
       ls $TARGET_DIR > $TEMP_FILE
       #
       # Create diagnostic log file of output.
-      #TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt  # Diagnostic line.
+      TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt"
       #
       # Status indicator.
       clear
@@ -928,17 +1170,31 @@ f_untagger () {
                # Remove all tags from file name.
                NEW_FILE_NAME=$FILE_NO_TAGS  # Diagnostic line.
                #
+               # Initialize ERROR.
+               ERROR=0
+               #
                # Rename file with tag names.
                if [ "$NEW_FILE_NAME" != "$FILE" ] ; then
-                  #echo >>$TEMP_FILE2  # Diagnostic line.
-                  #echo "---------------------------------" >>$TEMP_FILE2  # Diagnostic line.
-                  #echo "ORIG=$TARGET_DIR$FILE"          >>$TEMP_FILE2  # Diagnostic line.
-                  #echo "NEW =$TARGET_DIR$NEW_FILE_NAME" >>$TEMP_FILE2  # Diagnostic line.
-                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME
+                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME 2> $TEMP_FILE2
+                  ERROR=$?
+                  if [ $ERROR -ne 0 ] ; then
+                     let ERR=$ERR+1
+                  fi
                fi
                # End of file name list?
                # No, get next file name.
             done < $TEMP_FILE
+            #
+            # Were there any errors renaming files?
+            if [ $ERR -ne 0 ] ; then
+            f_message $1 "OK" "List Error Messages" $TEMP_FILE2
+            fi
+            #
+            # View TARGET_DIR.
+            ls $TARGET_DIR > $TEMP_FILE
+            f_message $1 "OK" "List Untagged $TARGET_DIR" $TEMP_FILE
+            #
+            unset TARGET_DIR
             #
 } # End of function f_untagger.
 #
@@ -947,7 +1203,8 @@ f_untagger () {
 # ***     Start of Main Program      ***
 # **************************************
 # **************************************
-#     Rev: 2021-01-30
+#     Rev: 2021-03-11
+#
 #
 if [ -e $TEMP_FILE ] ; then
    rm $TEMP_FILE
@@ -962,237 +1219,21 @@ sleep 1  # pause for 1 second automatically.
 #
 clear # Blank the screen.
 #
-# ****************************************************
-# Create new list of files that need to be downloaded.
-# ****************************************************
+#-------------------------------------------------------
+# Detect and download any missing scripts and libraries.
+#-------------------------------------------------------
 #
 #----------------------------------------------------------------
 # Variables FILE_LIST and FILE_DL_LIST are defined in the section
 # "Default Variable Values" at the beginning of this script.
 #----------------------------------------------------------------
 #
-# Delete any existing temp file.
-if [ -r  $FILE_DL_LIST ] ; then
-   rm  $FILE_DL_LIST
-fi
+# Are any files/libraries missing?
+fdl_download_missing_scripts $FILE_LIST $FILE_DL_LIST
 #
-while read LINE
-      do
-         FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
-         if [ ! -x $FILE ] ; then
-            # File needs to be downloaded or is not executable
-            chmod +x $FILE 2>$TEMP_FILE # Write any error messages to file $TEMP_FILE.
-            ERROR=$?
-            if [ $ERROR -ne 0 ] ; then
-               # File needs to be downloaded. Add file name to a file list in a text file.
-               # Build list of files to download.
-               echo $LINE >> $FILE_DL_LIST
-            fi
-         fi
-      done < $FILE_LIST
-#
-# If there are files to download (listed in FILE_DL_LIST), then mount local repository.
-if [ -s "$FILE_DL_LIST" ] ; then
-   echo
-   echo "There are missing file dependencies which must be downloaded from"
-   echo "the local repository or web repository."
-   echo
-   echo "Missing files:"
-   while read LINE
-         do
-            echo $LINE | awk -F "^" '{ print $1 }'
-         done < $FILE_DL_LIST
-   echo
-   echo "You will need to present credentials."
-   echo
-   echo -n "Press '"Enter"' key to continue." ; read X ; unset X
-   #
-   # **************************************************
-   # Select Download Source of Common Function Library.
-   # **************************************************
-   #
-   #----------------------------------------
-   # Get the download source of the Library.
-   #----------------------------------------
-   #
-   DL_LINE=$(grep common_bash_function.lib $FILE_DL_LIST)
-   #
-   # If Library is in the download file list, then choose download source.
-   if [ -n "$DL_LINE" ] ; then
-      fdl_choose_dl_source $DL_LINE
-   fi
-   #
-   # **************************************************
-   # Select Download Source of Dependent Project Files.
-   # **************************************************
-   # Set download source for all dependent files/libraries using the same source
-   # used by this file ($THIS_FILE).
-   #
-   #------------------------------------------
-   # Get the download source for this project.
-   #------------------------------------------
-   # Grep $FILE_LIST not $FILE_DL_LIST to get the download source for this project.
-   #
-   DL_LINE=$(grep $THIS_FILE $FILE_LIST)
-   #
-   # If this file ($THIS_FILE) is in the download file list, then choose download source.
-   if [ -n "$DL_LINE" ] ; then
-      fdl_choose_dl_source $DL_LINE
-   fi
-   #
-   #-----------------------------------------------------------------------
-   # Set the download source for all the dependent files to the same source
-   # used by this file ($THIS_FILE).
-   #-----------------------------------------------------------------------
-   # Change or substitute the new download choice for each project file
-   # in the download file list.
-   #
-   # Get download choice for this project and save as DL_SOURCE.
-   DL_LINE=$(grep $THIS_FILE $FILE_LIST)
-   #
-   while read LINE
-         do
-            DL_FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
-            DL_SOURCE=$(echo $DL_LINE | awk -F "^" '{ print $2 }')
-            # Format [File name]^[Local/Web]
-            DL_LINE=$(echo $LINE | awk -F "^" '{ print $1"^"$2}')
-            # All other files, substitute DL_LINE_NEW for LINE.
-            # DL_SOURCE [Local/Web] is the project's download choice for all project files.
-            # DL_SOURCE will over-write any existing value [Local/Web] for each project file.
-            # Substitute DL_SOURCE for existing value whether "Local" or "Web".
-            DL_LINE_NEW=${DL_LINE/$DL_FILE^Local/$DL_FILE^$DL_SOURCE}
-            DL_LINE_NEW=${DL_LINE/$DL_FILE^Web/$DL_FILE^$DL_SOURCE}
-            sed -i "s/$DL_LINE/$DL_LINE_NEW/" $FILE_DL_LIST
-         done < $FILE_DL_LIST
-   #
-   #--------------------------------------------------------------------------------------
-   # Check if there is a LAN (Local network) connection before mounting local mount-point.
-   #--------------------------------------------------------------------------------------
-   #
-   # Initialize Error Flag.
-   ERROR_LAN=0
-   #
-   grep --silent "Local" $FILE_DL_LIST
-   ERROR=$?
-   # exit code 0 - menu items in this file.
-   #           1 - no menu items in this file.
-   #               file name of file containing menu items must be specified.
-   #
-   if [ $ERROR -eq 0 ] ; then
-      #
-      # Check if there is an LAN connection before doing a download.
-      #
-      #-----------------------------------------------------------
-      # Variable PING_LAN_TARGET is defined in the section
-      # "Default Variable Values" at the beginning of this script.
-      #-----------------------------------------------------------
-      #
-      # Ping local file server.
-      ping -c 1 -q $PING_LAN_TARGET >/dev/null # Ping server address.
-      ERROR=$?
-      #
-      if [ $ERROR -ne 0 ] ; then
-         echo -e "\n\nPing Test Network Connection\n\nNo network connection to local file server."
-         ERROR_LAN=1
-      else
-         echo -e "\n\nPing Test Network Connection\n\nNetwork connnection to local file server is good."
-         ERROR_LAN=0
-         #
-         #-------------------------------------------------
-         # LAN connection is OK so mount local mount-point.
-         #-------------------------------------------------
-         #
-         #-----------------------------------------------------------
-         # Variables SERVER_DIR and MP_DIR are defined in the section
-         # "Default Variable Values" at the beginning of this script.
-         #-----------------------------------------------------------
-         #
-         # Mount the Local Repository to the mount-point.
-         fdl_mount_local $SERVER_DIR $MP_DIR
-         #
-      fi
-   fi
-   #
-   #------------------------------------------------------------------
-   # Check if there is a WAN (Web) connection before doing a download.
-   #------------------------------------------------------------------
-   #
-   # Initialize Error Flag.
-   ERROR_WAN=0
-   #
-   grep --silent "Web" $FILE_DL_LIST
-   ERROR=$?
-   # exit code 0 - menu items in this file.
-   #           1 - no menu items in this file.
-   #               file name of file containing menu items must be specified.
-   if [ $ERROR -eq 0 ] ; then
-      #
-      # Check if there is an LAN connection before doing a download.
-      #
-      #-----------------------------------------------------------
-      # Variable PING_WAN_TARGET is defined in the section
-      # "Default Variable Values" at the beginning of this script.
-      #-----------------------------------------------------------
-      #
-      ping -c 1 -q $PING_WAN_TARGET >/dev/null # Ping server address.
-      ERROR=$?
-      #
-      if [ $ERROR -ne 0 ] ; then
-         echo -e "\n\nPing Test Network Connection\n\nNo network connection to Web server."
-         ERROR_WAN=1
-      else
-         echo -e "\n\nPing Test Network Connection\n\nNetwork connnection to Web server is good."
-         ERROR_WAN=0
-      fi
-   fi
-   #
-   #----------------------------------------------------------------------------------------
-   # Select alternative download source if no network connection to primary download source.
-   #----------------------------------------------------------------------------------------
-   #
-   # If Local connection failed, switch to Web file server download.
-   if [ $ERROR_LAN -eq 1 ] ; then
-      # Format [File name]^[Local/Web]
-      sed -i "s/^Local^/^Web^/" $FILE_DL_LIST
-   fi
-   #
-   # If Web connection failed, switch to Local file server download.
-   if [ $ERROR_WAN -eq 1 ] ; then
-      # Format [File name]^[Local/Web]
-      sed -i "s/^Web^/^Local^/" $FILE_DL_LIST
-   fi
-   #
-   #----------------------------------------------------------------------------------------------
-   # From list of files to download created above $FILE_DL_LIST, download the files one at a time.
-   #----------------------------------------------------------------------------------------------
-   #
-   while read LINE
-         do
-            # Get Download Source for each file.
-            DL_FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
-            DL_SOURCE=$(echo $LINE | awk -F "^" '{ print $2 }')
-            TARGET_DIR=$(echo $LINE | awk -F "^" '{ print $3 }')
-            DL_REPOSITORY=$(echo $LINE | awk -F "^" '{ print $4 }')
-            #
-            # Initialize Error Flag.
-            ERROR=0
-            #
-            # If a file only found in the Local Repository has source changed
-            # to "Web" because LAN connectivity has failed, then do not download.
-            if [ -z DL_REPOSITORY ] && [ $DL_SOURCE = "Web" ] ; then
-               ERROR=1
-            fi
-            #
-            case $DL_SOURCE in
-                 Local)
-                    fdl_dwnld_library_from_local_repository $TARGET_DIR $DL_FILE $ERROR
-                 ;;
-                 Web)
-                    fdl_dwnld_library_from_web_site $DL_REPOSITORY $DL_FILE $ERROR
-                 ;;
-            esac
-            #
-         done < $FILE_DL_LIST
+# Are there any problems with the download/copy of missing scripts?
+if [ -r  $FILE_DL_LIST ] || [ $ERROR -ne 0 ] ; then
+   # Yes, there were missing files or download/copy problems so exit program.
    #
    # Delete temporary files.
    if [ -e $TEMP_FILE ] ; then
@@ -1207,23 +1248,10 @@ if [ -s "$FILE_DL_LIST" ] ; then
       rm  $FILE_DL_LIST
    fi
    #
-   echo
-   echo ">>> Please run program again after download. <<<"
-   echo
-   echo "Cannot continue, exiting program script."
-   sleep 3
-   exit 1  # Exit script after downloading dependent files and libraries.
-   #
+   exit 0  # This cleanly closes the process generated by #!bin/bash.
+           # Otherwise every time this script is run, another instance of
+           # process /bin/bash is created using up resources.
 fi
-#
-# Source each library.
-#
-while read LINE
-      do
-         FILE=$(echo $LINE | awk -F "^" '{ print $1 }')
-         # Invoke any library files.
-         f_source $FILE
-      done < $FILE_LIST
 #
 #***************************************************************
 # Process Any Optional Arguments and Set Variables THIS_DIR, GUI
@@ -1288,6 +1316,10 @@ f_menu_main $GUI
 #
 if [ -e $TEMP_FILE ] ; then
    rm $TEMP_FILE
+fi
+#
+if [ -e $TEMP_FILE2 ] ; then
+   rm $TEMP_FILE2
 fi
 #
 if [ -e  $FILE_LIST ] ; then
