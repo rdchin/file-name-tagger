@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# ©2021 Copyright 2021 Robert D. Chin
+# ©2023 Copyright 2023 Robert D. Chin
 # Email: RDevChin@Gmail.com
 #
 # Usage: bash filename_tagger.sh
@@ -46,7 +46,7 @@
 # |        Default Variable Values         |
 # +----------------------------------------+
 #
-VERSION="2021-03-12 15:56"
+VERSION="2022-04-20 23:35"
 THIS_FILE="$0"
 TEMP_FILE=$THIS_FILE"_temp.txt"
 GENERATED_FILE=$THIS_FILE"_menu_generated.lib"
@@ -64,20 +64,20 @@ GENERATED_FILE=$THIS_FILE"_menu_generated.lib"
 #
 # LAN File Server shared directory.
 # SERVER_DIR="[FILE_SERVER_DIRECTORY_NAME_GOES_HERE]"
-  SERVER_DIR="//scotty/files"
+  SERVER_DIR="//file_server/public"
 #
 # Local PC mount-point directory.
 # MP_DIR="[LOCAL_MOUNT-POINT_DIRECTORY_NAME_GOES_HERE]"
-  MP_DIR="/mnt/scotty/files"
+  MP_DIR="/mnt/file_server/public"
 #
 # Local PC mount-point with LAN File Server Local Repository full directory path.
-# Example: 
+# Example:
 #                   File server shared directory is "//file_server/public".
 # Repostory directory under the shared directory is "scripts/BASH/Repository".
 #                 Local PC Mount-point directory is "/mnt/file_server/public".
 #
 # LOCAL_REPO_DIR="$MP_DIR/[DIRECTORY_PATH_TO_LOCAL_REPOSITORY]"
-  LOCAL_REPO_DIR="$MP_DIR/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"
+  LOCAL_REPO_DIR="$MP_DIR/file_server/scripts/Repository"
 #
 #
 #=================================================================
@@ -111,7 +111,7 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #& This script will insert tag names into the beginning of file names.
 #& The list of tag names may be edited or appended in the Main program
 #& according to the general topic or subject matter.
-#& 
+#&
 #& The tag names initially chosen for this script are on PC software and
 #& hardware topics.
 #&
@@ -163,42 +163,49 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #?                         --hist
 #
 # +----------------------------------------+
-# |                Code Notes              |
-# +----------------------------------------+
-#
-# To disable the [ OPTION ] --update -u to update the script:
-#    1) Comment out the call to function fdl_download_missing_scripts in
-#       Section "Start of Main Program".
-#
-# To completely delete the [ OPTION ] --update -u to update the script:
-#    1) Delete the call to function fdl_download_missing_scripts in
-#       Section "Start of Main Program".
-#    2) Delete all functions beginning with "f_dl"
-#    3) Delete instructions to update script in Section "Help and Usage".
-#
-# To disable the Main Menu:
-#    1) Comment out the call to function f_menu_main under "Run Main Code"
-#       in Section "Start of Main Program".
-#    2) Add calls to desired functions under "Run Main Code"
-#       in Section "Start of Main Program".
-#
-# To completely remove the Main Menu and its code:
-#    1) Delete the call to function f_menu_main under "Run Main Code" in
-#       Section "Start of Main Program".
-#    2) Add calls to desired functions under "Run Main Code"
-#       in Section "Start of Main Program".
-#    3) Delete the function f_menu_main.
-#    4) Delete "Menu Choice Options" in this script located under
-#       Section "Customize Menu choice options below".
-#       The "Menu Choice Options" lines begin with "#@@".
-#
-# +----------------------------------------+
 # |           Code Change History          |
 # +----------------------------------------+
 #
+## Code Notes
+##
+## To disable the [ OPTION ] --update -u to update the script:
+##    1) Comment out the call to function fdl_download_missing_scripts in
+##       Section "Start of Main Program".
+##
+## To completely delete the [ OPTION ] --update -u to update the script:
+##    1) Delete the call to function fdl_download_missing_scripts in
+##       Section "Start of Main Program".
+##    2) Delete all functions beginning with "f_dl"
+##    3) Delete instructions to update script in Section "Help and Usage".
+##
+## To disable the Main Menu:
+##    1) Comment out the call to function f_menu_main under "Run Main Code"
+##       in Section "Start of Main Program".
+##    2) Add calls to desired functions under "Run Main Code"
+##       in Section "Start of Main Program".
+##
+## To completely remove the Main Menu and its code:
+##    1) Delete the call to function f_menu_main under "Run Main Code" in
+##       Section "Start of Main Program".
+##    2) Add calls to desired functions under "Run Main Code"
+##       in Section "Start of Main Program".
+##    3) Delete the function f_menu_main.
+##    4) Delete "Menu Choice Options" in example_library.lib located under
+##       Section "Customize Menu choice options below".
+##       The "Menu Choice Options" lines begin with "#@@".
+##
 ## Code Change History
 ##
 ## (After each edit made, please update Code History and VERSION.)
+##
+## 2022-04-20 *fdl_download_missing_scripts fixed bug to prevent downloading
+##             from the remote repository if the local repository was
+##             unavailable and the script was only in the local repository.
+##
+## 2021-12-23 *f_tagger bug fixed for file names with "How to", "how to"
+##             not being tagged with "HOW-TO". Clarified status message
+##             displayed on screen.
+##            *f_untagger clarified status message displayed on screen.
 ##
 ## 2021-03-12 *Updated to latest standards and improved comments.
 ##            *fdl_download_missing_scripts added 2 arguments for file names
@@ -233,7 +240,7 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 # |     Function f_display_common      |
 # +------------------------------------+
 #
-#     Rev: 2021-03-31
+#     Rev: 2021-03-07
 #  Inputs: $1=UI - "text", "dialog" or "whiptail" the preferred user-interface.
 #          $2=Delimiter of text to be displayed.
 #          $3="NOK", "OK", or null [OPTIONAL] to control display of "OK" button.
@@ -248,22 +255,18 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #
 f_display_common () {
       #
-      # Set $THIS_FILE to the file name containing the text to be displayed.
-      #
-      # WARNING: Do not define $THIS_FILE within a library script.
-      #
-      # This prevents $THIS_FILE being inadvertently re-defined and set to
-      # the file name of the library when the command:
-      # "source [ LIBRARY_FILE.lib ]" is used.
-      #
+      # Specify $THIS_FILE name of the file containing the text to be displayed.
+      # $THIS_FILE may be re-defined inadvertently when a library file defines it
+      # so when the command, source [ LIBRARY_FILE.lib ] is used, $THIS_FILE is
+      # redefined to the name of the library file, LIBRARY_FILE.lib.
       # For that reason, all library files now have the line
-      # THIS_FILE="[LIBRARY_FILE.lib]" commented out or deleted.
+      # THIS_FILE="[LIBRARY_FILE.lib]" deleted.
       #
       #
-      #==================================================================
-      # EDIT THE LINE BELOW TO DEFINE $THIS_FILE AS THE ACTUAL FILE NAME
-      # CONTAINING THE BRIEF DESCRIPTION, CODE HISTORY, AND HELP MESSAGE.
-      #==================================================================
+      #================================================================================
+      # EDIT THE LINE BELOW TO DEFINE $THIS_FILE AS THE ACTUAL FILE NAME WHERE THE
+      # ABOUT, CODE HISTORY, AND HELP MESSAGE TEXT IS LOCATED.
+      #================================================================================
       #
       #
       THIS_FILE="filename_tagger.sh"  # <<<--- INSERT ACTUAL FILE NAME HERE.
@@ -282,7 +285,7 @@ f_display_common () {
       # Display text (all lines beginning ("^") with $2 but do not print $2).
       # sed substitutes null for $2 at the beginning of each line
       # so it is not printed.
-      sed -n "s/$2//"p $THIS_DIR/$THIS_FILE >> $TEMP_FILE
+      sed --silent "s/$2//p" $THIS_DIR/$THIS_FILE >> $TEMP_FILE
       #
       case $3 in
            "NOK" | "nok")
@@ -593,7 +596,7 @@ fdl_source () {
 # Outputs: ANS.
 #
 # Summary: This function can be used when script is first run.
-#          It verifies that all dependencies are satisfied. 
+#          It verifies that all dependencies are satisfied.
 #          If any are missing, then any missing required dependencies of
 #          scripts and libraries are downloaded from a LAN repository or
 #          from a repository on the Internet.
@@ -602,7 +605,7 @@ fdl_source () {
 #          directory and then when it is executed or run, it will download
 #          automatically all other needed files and libraries, set them to be
 #          executable, and source the required libraries.
-#          
+#
 #          Cannot be dependent on "common_bash_function.lib" as this library
 #          may not yet be available and may need to be downloaded.
 #
@@ -620,7 +623,7 @@ fdl_download_missing_scripts () {
       # ****************************************************
       #
       # While-loop will read the file names listed in FILE_LIST (list of
-      # script and library files) and detect which are missing and need 
+      # script and library files) and detect which are missing and need
       # to be downloaded and then put those file names in FILE_DL_LIST.
       #
       while read LINE
@@ -671,7 +674,7 @@ fdl_download_missing_scripts () {
                   #
                   # If a file only found in the Local Repository has source changed
                   # to "Web" because LAN connectivity has failed, then do not download.
-                  if [ -z DL_REPOSITORY ] && [ $DL_SOURCE = "Web" ] ; then
+                  if [ -z $DL_REPOSITORY ] && [ $DL_SOURCE = "Web" ] ; then
                      ERROR=1
                   fi
                   #
@@ -686,7 +689,7 @@ fdl_download_missing_scripts () {
                              # So download from Web Repository.
                              fdl_dwnld_file_from_web_site $DL_REPOSITORY $DL_FILE
                           else
-                             # Sucessful mount of LAN File Server directory. 
+                             # Sucessful mount of LAN File Server directory.
                              # Continue with download from Local Repository on LAN File Server.
                              fdl_dwnld_file_from_local_repository $TARGET_DIR $DL_FILE
                              #
@@ -764,20 +767,18 @@ fdl_download_missing_scripts () {
 # |        Function f_check_version        |
 # +----------------------------------------+
 #
-#     Rev: 2021-03-25
-#  Inputs: $1 - UI "dialog" or "whiptail" or "text".
-#          $2 - [OPTIONAL] File name to compare.
-#          FILE_TO_COMPARE.
+#     Rev: 2021-03-12
+#  Inputs: $1=UI - "dialog" or "whiptail" or "text" (the UI
 #    Uses: SERVER_DIR, MP_DIR, TARGET_DIR, TARGET_FILE, VERSION, TEMP_FILE, ERROR.
 # Outputs: ERROR.
 #
 # Summary: Check the version of a single, local file or script,
 #          FILE_TO_COMPARE with the version of repository file.
-#          If the repository file has latest version, then copy all 
+#          If the repository file has latest version, then copy all
 #          dependent files and libraries from the repository to local PC.
 #
 # TO DO enhancement: If local (LAN) repository is unavailable, then
-#          connect to repository on the web if available.
+#                    connect to repository on the web if available.
 #
 # Dependencies: f_version_compare.
 #
@@ -785,44 +786,34 @@ f_check_version () {
       #
       #
       #=================================================================
-      # EDIT THE LINES BELOW TO DEFINE THE LAN FILE SERVER DIRECTORY,
-      # LOCAL MOUNTPOINT DIRECTORY, LOCAL REPOSITORY DIRECTORY AND
-      # FILE TO COMPARE BETWEEN THE LOCAL PC AND (LAN) LOCAL REPOSITORY.
+      # EDIT THE LINES BELOW TO DEFINE THE LAN FILE SERVER DIRECTORY AND
+      # SHARED MOUNTPOINT DIRECTORY, LOCAL TARGET DIRECTORY AND FILE.
       #=================================================================
       #
       #
       # LAN File Server shared directory.
       # SERVER_DIR="[FILE_SERVER_DIRECTORY_NAME_GOES_HERE]"
-        SERVER_DIR="//scotty/files"
+        SERVER_DIR="//file_server/public"
       #
       # Local PC mount-point directory.
       # MP_DIR="[LOCAL_MOUNT-POINT_DIRECTORY_NAME_GOES_HERE]"
-        MP_DIR="/mnt/scotty/files"
+        MP_DIR="/mnt/file_server/public"
       #
       # Local PC mount-point with LAN File Server Local Repository full directory path.
-      # Example: 
+      # Example:
       #                   File server shared directory is "//file_server/public".
-      # Repository directory under the shared directory is "scripts/BASH/Repository".
+      # Repostory directory under the shared directory is "scripts/BASH/Repository".
       #                 Local PC Mount-point directory is "/mnt/file_server/public".
       #
       # Local PC mount-point with LAN File Server Local Repository full directory path.
       # LOCAL_REPO_DIR="$MP_DIR/[DIRECTORY_PATH_TO_LOCAL_REPOSITORY]"
         LOCAL_REPO_DIR="$MP_DIR/LIBRARY/PC-stuff/PC-software/BASH_Scripting_Projects/Repository"
       #
-      # Local PC file to be compared.
-      if [ $# -eq 2 ] ; then
-         # There are 2 arguments that have been passed to this function.
-         # $2 contains the file name to compare.
-         FILE_TO_COMPARE=$2
-      else
-         # $2 is null, so specify file name.
-         if [ -z "$FILE_TO_COMPARE" ] ; then
-            # FILE_TO_COMPARE is undefined so specify file name.
-            FILE_TO_COMPARE=$(basename $0)
-         fi
-      fi
+      # Local PC file within TARGET_DIR.
+      # FILE_TO_COMPARE="[FILE_TO_COMPARE]"
+        FILE_TO_COMPARE="filename_tagger.sh"
       #
-      # Version of Local PC file to be compared.
+      # Version of TARGET_FILE.
       VERSION=$(grep --max-count=1 "VERSION" $FILE_TO_COMPARE)
       #
       FILE_LIST=$THIS_DIR/$THIS_FILE"_file_temp.txt"
@@ -831,7 +822,7 @@ f_check_version () {
       #
       #=================================================================
       # EDIT THE LINES BELOW TO SPECIFY THE FILE NAMES TO UPDATE.
-      # FILE NAMES INCLUDE ALL DEPENDENT SCRIPTS AND LIBRARIES.
+      # FILE NAMES INCLUDE ALL DEPENDENT SCRIPTS LIBRARIES.
       #=================================================================
       #
       #
@@ -846,23 +837,17 @@ f_check_version () {
          rm  $FILE_LIST
       fi
       #
-}  # End of function f_check_version.
+}  # End of function f_check_version_TEMPLATE.
 #
 # +----------------------------------------+
-# |          Function f_select_dir         |
+# |    Function f_select_target_directory  |
 # +----------------------------------------+
 #
-#  Inputs: $1=GUI, THIS_DIR.
-#          $2=String "[City/Town] Directory"
-#          $3=Default parent directory.
+#  Inputs: $1=GUI
 #    Uses: TEMP_FILE, ANS, ERROR, SCRIPT_LIST.
-# Outputs: ANS (List of selected files), ERROR.
+# Outputs: TARGET_DIR.
 #
-# Summary: Prompt user-entered file name.
-#
-# Dependencies: f_yn_question, f_message.
-#
-f_select_dir () {
+f_select_target_directory () {
       #
       # Get the screen resolution or X-window size.
       # Get rows (height).
@@ -870,76 +855,46 @@ f_select_dir () {
       # Get columns (width).
       XSCREEN=$(stty size | awk '{ print $2 }')
       #
-      # Reset ERROR for while-loop to work.
-      ERROR=0
-      #
-      # Initialize variables.
-      DIR=""
-      ANS=""
-      #
-      # Format string substitute underscores for spaces.
-      DIR_STR=$(echo $2 | tr "_" " ")
-      #
       case $1 in
            dialog)
-              while [ "$ERROR" -eq 0 ]
-                    do
-                       # Dialog needs about 6 more lines for the header and [OK] button.
-                       let Y=$YSCREEN-16
-                       # If number of lines exceeds screen/window height then set textbox height.
-                       #
-                       # Dialog needs about 10 more spaces for the right and left window frame.
-                       let X=$XSCREEN-10
-                       #
-                       DIR=$($1 --stdout --title "Use <tab>, <up/down arrows> and <spacebar> to select a $DIR_STR." --backtitle "Please choose a $DIR_STR" --ok-label "Choose $DIR_STR" --cancel-label "Done choosing" --dselect $3 $Y $X)
-                       ERROR=$?
-                       #
-                       if [ "$ERROR" -eq 0 ] && [ -d $DIR ] ; then
-                          f_yn_question $1 "Y" "Confirm $DIR_STR name" "$DIR_STR name: $DIR\n\nIs the $DIR_STR name correct?"
-                          #
-                          if [ "$ANS" -ne 1 ] ; then
-                             # Yes, $DIR_STR name is correct. Note: $DIR includes "Directory Name".
-                             # Output selected Directory Name to $ANS.
-                             ANS=$DIR
-                             #
-                             f_message $1 "NOK" "Directory Entered" "Directory name accepted. Enter next directory name or press \"Exit\" button.\n\n$DIR" 2
-                          fi
-                       fi
-                    done
               #
-              # Reset ERROR since on exiting WHILE-loop it will always be EXIT=1.
-              ERROR=0
+              # Dialog needs about 6 more lines for the header and [OK] button.
+              let Y=$YSCREEN-16
+              # If number of lines exceeds screen/window height then set textbox height.
+              #
+              # Dialog needs about 10 more spaces for the right and left window frame.
+              let X=$XSCREEN-10
+              #
+              TARGET_DIR=$($1 --stdout --title "Use <tab>, <up/down arrows> and <spacebar> to select a directory." --backtitle "Please choose a directory" --cancel-label "Exit" --fselect $THIS_DIR $Y $X)
+              ERROR=$?
               #
            ;;
            whiptail)
-              # User-input via "inputbox" free-form directory name entry.
-              $1 --title "User-entered $DIR_STR" --cancel-button "Exit" --inputbox "Enter $DIR_STR name:" 8 70 $3 2>$TEMP_FILE
+              # User-input via "inputbox" free-form TARGET_DIR name entry.
+              $1 --title "User-entered Directory" --cancel-button "Exit" --inputbox "Enter Target Directory name:" 8 70 2>$TEMP_FILE
               ERROR=$?
-              ANS=$(cat $TEMP_FILE)
+              TARGET_DIR=$(cat $TEMP_FILE)
               #
            ;;
            text)
               ERROR=0
-              # The user-entered directory name is whatever is after $3 default parent directory.
-              echo "User-entered $DIR_STR name"
+              echo "Enter Target Directory Name"
               echo
-              echo -n "Enter $DIR_STR name(s): $3/"
-              read ANS
-              #
-              # String $3 includes a trailing "/".
-              ANS=$3$ANS
-              #
-              if [ -z "$ANS" ] ; then
+              echo -n "Enter Target Directory name: "
+              read TARGET_DIR
+              if [ -z "$TARGET_DIR" ] ; then
+                 # Force exit script.
                  ERROR=1
               fi
            ;;
       esac
       #
-      if [ "$ERROR" -eq 1 ] ; then
+      if [ $ERROR -eq 1 ] ; then
+         #f_exit_script $1
          return 1  # Return to Main Menu.
       fi
       #
-} # End of function f_select_dir.
+} # End of function f_project_process_user_files
 #
 # +----------------------------------------+
 # |             Function f_tagger          |
@@ -952,29 +907,16 @@ f_select_dir () {
 #
 f_tagger () {
       #
-      unset TARGET_DIR      
-      #
-      # Define TARGET_DIR
-      TARGET_DIR="TARGET_DIR"
+      unset TARGET_DIR
       #
       # If there is no target directory specified, ask for directory.
-      if [ -d "$2" ] ; then
-         TARGET_DIR=$2
-      else
-         f_select_dir $1 "Target_Directory" "/home"
-         #
-         # Set TARGET_DIR to the selected directory.
-         TARGET_DIR=$ANS
+      TARGET_DIR=$2
+      #
+      if [ -z $TARGET_DIR ] ; then
+         f_select_target_directory $1
       fi
       #
       if [ $ERROR -eq 1 ] ; then
-         return 1  # Return to Main Menu.
-      fi
-      #
-      # Does the directory exist?
-      if [ ! -d "$TARGET_DIR" ] ; then
-         # No, directory does not exist.
-         f_message $1 "OK" "Directory Error" "$DIR_STR does not exist.\n\n$TARGET_DIR"
          return 1  # Return to Main Menu.
       fi
       #
@@ -982,7 +924,7 @@ f_tagger () {
       ls $TARGET_DIR > $TEMP_FILE
       #
       # Create diagnostic log file of output.
-      TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt"
+      #TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt  # Diagnostic line.
       #
       # Exclude shell script filenames *.sh by deleting them from $TEMP_FILE.
       sed -i '/\.sh$/d' $TEMP_FILE
@@ -1001,7 +943,8 @@ f_tagger () {
       #
       # Status indicator.
       clear
-      echo -n "Script: filename_tagger.sh tagging file names in directory $TARGET_DIR "
+      echo -e "Script: filename_tagger.sh tagging file names\nin directory $TARGET_DIR "
+      echo -n "Adding tags -- Please stand-by"
       #
       # Read file name.
       while read FILE
@@ -1026,26 +969,38 @@ f_tagger () {
                # End of unused code.
                #
                # Convert $FILE to upper-case to compare words with $TAG (upper-case).
-               FILE_UPPERCASE=$(echo $FILE_NO_TAGS | sed 's/./\U&/g') 
+               FILE_UPPERCASE=$(echo $FILE_NO_TAGS | sed 's/./\U&/g')
+               #
+               # Does the file name include "HOW_TO" if so replace with "HOW-TO" which is a TAG.
+               if [[ $FILE_UPPERCASE == *HOW_TO* ]] ; then
+                  FILE_NEW=$(echo $FILE_UPPERCASE | sed 's/HOW_TO/HOW-TO/g')
+                  FILE_UPPERCASE=$FILE_NEW
+               fi
+               #
+               # Does the file name include "HOWTO" if so replace with "HOW-TO" which is a TAG.
+               if [[ $FILE_UPPERCASE == *HOWTO* ]] ; then
+                  FILE_NEW=$(echo $FILE_UPPERCASE | sed 's/HOWTO/HOW-TO/g')
+                  FILE_UPPERCASE=$FILE_NEW
+               fi
                #
                NEWTAG=""
                #
                #
                #================================================================================
-               # EDIT THE LINE BELOW WHICH IS A LIST OF TAG NAMES TO PREFIX THE FILE NAMES. 
+               # EDIT THE LINE BELOW WHICH IS A LIST OF TAG NAMES TO PREFIX THE FILE NAMES.
                # NEW FILE NAME FORMAT: $TAG"--TAG--"[FILE NAME].
                #================================================================================
                #
                #
-               for TAG in ADAPTER ADDRESS APT APT-GET ARRAY AWK BACKUP BASH BLUETOOTH BOOTING CLI CLIENT CLOUD COMMAND COMMAND_LINE COMPRESS COMPRESSION CONKY CONSOLE CONTAINER CONVERSION COPY CPU CRON DEBIAN DESKTOP DHCP DIALOG DIRECTORIES DIRECTORY DISKS DISTRO DNS DROPBOX EMACS ENCRYPT EXT4 FAT32 FEDORA FINANCE FIREWALL FLASH GAME GIT GNOME GUIDE HACKS HARDWARE HELP HISTORY HOW-TO HOWTO IMAGE INSTALL INTERNET JOB KDE LIBREOFFICE LINUX LINUX_MINT MAN_PAGE MEMORY MICROSOFT MONITOR MOUNT MUSIC NAS NETWORK NEWBIES NTFS OPEN_SOURCE PACKAGE PARTITION PASSWORD PIM PLAYERS PORTS PRIVACY PRIVATE PYTHON RAID RASPBERRY REFERENCE REMOTE RENAME REPLACE ROUTER RSYNC SCREEN SCRIPT SEARCH SECURITY SED SERVER SHARE SHELL SHUTDOWN SQL SSH SUDO SYNC SYSADMIN SYSTEM TERMINAL TIPS TOOLS TUTORIAL UBUNTU UNMOUNT UPDATE USB UTILITIES UTILITY VIM VIRTUAL VIRTUALBOX VIRUS WEB WHIPTAIL WIFI ZFS
-                   do 
+               for TAG in ADAPTER ADDRESS APT APT-GET ARRAY AWK BACKUP BASH BLUETOOTH BOOTING CLI CLIENT CLOUD COMMAND COMMAND_LINE COMPRESS COMPRESSION CONKY CONSOLE CONTAINER CONVERSION COPY CPU CRON DEBIAN DESKTOP DHCP DIALOG DIRECTORIES DIRECTORY DISKS DISTRO DNS DROPBOX EMACS ENCRYPT EXT4 FAT32 FEDORA FINANCE FIREWALL FLASH GAME GIT GNOME GOOGLE GUIDE HACKS HARDWARE HELP HISTORY HOW-TO IMAGE INSTALL INTERNET JOB KDE LIBREOFFICE LINUX LINUX_MINT MAN_PAGE MEMORY MICROSOFT MONITOR MOUNT MUSIC NAS NETWORK NEWBIES NTFS OPEN_DOCUMENT OPEN_SOURCE PACKAGE PARTITION PASSWORD PIM PLAYERS PORTS PRIVACY PRIVATE PYTHON RAID RASPBERRY REFERENCE REMOTE RENAME REPLACE ROUTER RSYNC SCREEN SCRIPT SEARCH SECURITY SED SERVER SHARE SHELL SHUTDOWN SQL SSH SUDO SYNC SYSADMIN SYSTEM TERMINAL TIPS TOOLS TUTORIAL UBUNTU UNMOUNT UPDATE USB UTILITIES UTILITY VIM VIRTUAL VIRTUALBOX VIRUS WEB WHIPTAIL WIFI WINE ZFS
+                   do
                       # Does the file name include the existing tag?
                       if [[ $FILE_UPPERCASE == *$TAG* ]] ; then
                          # Yes, write tag to prefix.
                          if [ -z $NEWTAG ] ; then
                             NEWTAG=$TAG
                          else
-                            NEWTAG=$NEWTAG"_"$TAG             
+                            NEWTAG=$NEWTAG"_"$TAG
                          fi
                       fi
                       # Get next tag.
@@ -1065,33 +1020,17 @@ f_tagger () {
                   NEW_FILE_NAME=$NEWTAG"--TAGS--"$FILE_NO_TAGS
                fi
                #
-               # Initialize ERR, ERROR.
-               ERROR=0
-               ERR=0
-               #
-               # Clear TEMP_FILE2.
-               echo "Error Log" > $TEMP_FILE2
-               #
                # Rename file with tag names.
                if [ "$NEW_FILE_NAME" != "$FILE" ] ; then
-                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME 2> $TEMP_FILE2
-                  ERROR=$?
-                  if [ $ERROR -ne 0 ] ; then
-                     let ERR=$ERR+1
-                  fi
+                  #echo >>$TEMP_FILE2  # Diagnostic line.
+                  #echo "---------------------------------" >>$TEMP_FILE2  # Diagnostic line.
+                  #echo "ORIG=$TARGET_DIR$FILE"          >>$TEMP_FILE2  # Diagnostic line.
+                  #echo "NEW =$TARGET_DIR$NEW_FILE_NAME" >>$TEMP_FILE2  # Diagnostic line.
+                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME
                fi
                # End of file name list?
                # No, get next file name.
             done < $TEMP_FILE
-            #
-            # Were there any errors renaming files?
-            if [ $ERR -ne 0 ] ; then
-            f_message $1 "OK" "List Error Messages" $TEMP_FILE2
-            fi
-            #
-            # View TARGET_DIR.
-            ls $TARGET_DIR > $TEMP_FILE
-            f_message $1 "OK" "List tagged $TARGET_DIR" $TEMP_FILE
             #
             unset TARGET_DIR
             #
@@ -1110,28 +1049,15 @@ f_untagger () {
       #
       unset TARGET_DIR
       #
-      # Define TARGET_DIR
-      TARGET_DIR=""
-      #
       # If there is no target directory specified, ask for directory.
-      if [ -d "$2" ] ; then
-         TARGET_DIR=$2
-      else
-         #f_select_target_directory $1
-         f_select_dir $1 "Target_Directory" "/home"
-         #
-         # Set TARGET_DIR to the selected directory.
-         TARGET_DIR=$ANS
+      TARGET_DIR=$2
+      #
+      if [ -z $TARGET_DIR ] ;
+       then
+         f_select_target_directory $1
       fi
       #
       if [ $ERROR -eq 1 ] ; then
-         return 1  # Return to Main Menu.
-      fi
-      #
-      # Does the directory exist?
-      if [ ! -d "$TARGET_DIR" ] ; then
-         # No, directory does not exist.
-         f_message $1 "OK" "Directory Error" "$DIR_STR does not exist.\n\n$TARGET_DIR"
          return 1  # Return to Main Menu.
       fi
       #
@@ -1139,11 +1065,12 @@ f_untagger () {
       ls $TARGET_DIR > $TEMP_FILE
       #
       # Create diagnostic log file of output.
-      TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt"
+      #TEMP_FILE2=$THIS_FILE"_OUTPUT_temp.txt  # Diagnostic line.
       #
       # Status indicator.
       clear
-      echo -n "Script: filename_tagger.sh tagging file names in directory $TARGET_DIR "
+      echo -e "Script: filename_tagger.sh removing tags from file names\nin directory $TARGET_DIR "
+      echo -n "Removing tags -- Please stand-by"
       #
       # Read file name.
       while read FILE
@@ -1170,31 +1097,17 @@ f_untagger () {
                # Remove all tags from file name.
                NEW_FILE_NAME=$FILE_NO_TAGS  # Diagnostic line.
                #
-               # Initialize ERROR.
-               ERROR=0
-               #
                # Rename file with tag names.
                if [ "$NEW_FILE_NAME" != "$FILE" ] ; then
-                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME 2> $TEMP_FILE2
-                  ERROR=$?
-                  if [ $ERROR -ne 0 ] ; then
-                     let ERR=$ERR+1
-                  fi
+                  #echo >>$TEMP_FILE2  # Diagnostic line.
+                  #echo "---------------------------------" >>$TEMP_FILE2  # Diagnostic line.
+                  #echo "ORIG=$TARGET_DIR$FILE"          >>$TEMP_FILE2  # Diagnostic line.
+                  #echo "NEW =$TARGET_DIR$NEW_FILE_NAME" >>$TEMP_FILE2  # Diagnostic line.
+                  mv $TARGET_DIR$FILE $TARGET_DIR$NEW_FILE_NAME
                fi
                # End of file name list?
                # No, get next file name.
             done < $TEMP_FILE
-            #
-            # Were there any errors renaming files?
-            if [ $ERR -ne 0 ] ; then
-            f_message $1 "OK" "List Error Messages" $TEMP_FILE2
-            fi
-            #
-            # View TARGET_DIR.
-            ls $TARGET_DIR > $TEMP_FILE
-            f_message $1 "OK" "List Untagged $TARGET_DIR" $TEMP_FILE
-            #
-            unset TARGET_DIR
             #
 } # End of function f_untagger.
 #
@@ -1316,10 +1229,6 @@ f_menu_main $GUI
 #
 if [ -e $TEMP_FILE ] ; then
    rm $TEMP_FILE
-fi
-#
-if [ -e $TEMP_FILE2 ] ; then
-   rm $TEMP_FILE2
 fi
 #
 if [ -e  $FILE_LIST ] ; then
