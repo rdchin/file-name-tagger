@@ -53,7 +53,7 @@
 # |        Default Variable Values         |
 # +----------------------------------------+
 #
-VERSION="2024-02-23 21:22"
+VERSION="2024-02-25 23:19"
 THIS_FILE=$(basename $0)
 FILE_TO_COMPARE=$THIS_FILE
 TEMP_FILE=$THIS_FILE"_temp.txt"
@@ -64,6 +64,9 @@ HOSTNAME=$(cat /etc/hostname)
 #================================================================
 # EDIT THE LINES BELOW TO SET REPOSITORY SERVERS AND DIRECTORIES
 # AND TO INCLUDE ALL DEPENDENT SCRIPTS AND LIBRARIES TO DOWNLOAD.
+#
+# ALSO PLEASE EDIT f_check_version
+#
 #================================================================
 #
 #
@@ -73,12 +76,12 @@ HOSTNAME=$(cat /etc/hostname)
 #
 # LAN File Server shared directory.
 # SERVER_DIR="[FILE_SERVER_DIRECTORY_NAME_GOES_HERE]"
-#SERVER_DIR="//file_server/files"
+# SERVER_DIR="//file_server/files"
 SERVER_DIR="//file_server/files"
 #
 # Local PC mount-point directory.
 # MP_DIR="[LOCAL_MOUNT-POINT_DIRECTORY_NAME_GOES_HERE]"
-#MP_DIR="/mnt/file_server/files"
+# MP_DIR="/mnt/file_server/files"
 MP_DIR="/mnt/file_server/files"
 #
 # Local PC mount-point with LAN File Server Local Repository full directory path.
@@ -91,6 +94,12 @@ MP_DIR="/mnt/file_server/files"
 # LOCAL_REPO_DIR="$MP_DIR/Local_Repository"
 LOCAL_REPO_DIR="$MP_DIR/Local_Repository"
 #
+# Web Repository i.e. Hosted by GitHub.com or another web site.
+# WEB_REPOSITORY_URL="raw.githubusercontent.com/user/project/branch"
+WEB_REPOSITORY_URL="raw.githubusercontent.com/rdchin/file-name-tagger/main/"
+#
+# Warning: If the Github Repository is "Private", then anonymous downloads are not permitted.
+#
 #
 #=================================================================
 # EDIT THE LINES BELOW TO SPECIFY THE FILE NAMES TO UPDATE.
@@ -98,32 +107,12 @@ LOCAL_REPO_DIR="$MP_DIR/Local_Repository"
 #=================================================================
 #
 #
-# --------------------------------------------
-# Create a list of all dependent library files
-# and write to temporary file, FILE_LIST.
-# --------------------------------------------
-#
 # Temporary file FILE_LIST contains a list of file names of dependent
 # scripts and libraries.
-#
 FILE_LIST=$THIS_FILE"_file_temp.txt"
 #
-# Web Repository i.e. Hosted by GitHub.com or another web site.
-#
-# Warning: If the Github Repository is "Private", then anonymous downloads are not permitted.
-#
 # Format: [File Name]^[Local/Web]^[Local repository directory]^[web repository directory]
-#
-# The Github repository "menu_customized" is a private so no anonymous downloads are permitted.
-# Log in to https://github.com and manually download scripts men.sh, men.lib.
-#
-# But the men.lib still must be included in $FILE_LIST because this script
-# will source all libraries later using $FILE_LIST for the library names.
-#
-WEB_REPOSITORY_URL="raw.githubusercontent.com/rdchin/file-name-tagger/main/"
 echo "filename_tagger.sh^Local^$LOCAL_REPO_DIR^$WEB_REPOSITORY_URL" >> $FILE_LIST
-#
-WEB_REPOSITORY_URL="raw.githubusercontent.com/rdchin/BASH_function_library/master/"
 echo "common_bash_function.lib^Local^$LOCAL_REPO_DIR^$WEB_REPOSITORY_URL" >> $FILE_LIST
 #
 # Create a name for a temporary file which will have a list of files which need to be downloaded.
@@ -141,6 +130,12 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #&
 #& The tag names initially chosen for this script are on PC software and
 #& hardware topics.
+#&
+#& This script displays customized menus which have their items
+#& in clear text comment lines in a file which is easily edited.
+#&
+#& This script will generate either a CLI text menu, or "Dialog" or
+#& "Whiptail" UI menu from an array using data in clear text in a file.
 #&
 #& Required scripts: filename_tagger.sh, common_bash_function.lib.
 #&
@@ -190,40 +185,49 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 #?                         --hist
 #
 # +----------------------------------------+
+# |                Code Notes              |
+# +----------------------------------------+
+#
+# To disable the [ OPTION ] --update -u to update the script:
+#    1) Comment out the call to function fdl_download_missing_scripts in
+#       Section "Start of Main Program".
+#
+# To completely delete the [ OPTION ] --update -u to update the script:
+#    1) Delete the call to function fdl_download_missing_scripts in
+#       Section "Start of Main Program".
+#    2) Delete all functions beginning with "f_dl"
+#    3) Delete instructions to update script in Section "Help and Usage".
+#
+# To disable the Main Menu:
+#    1) Comment out the call to function f_menu_main_all_menus under
+#       "Run Main Code" in Section "Start of Main Program".
+#    2) Add calls to desired functions under "Run Main Code"
+#       in Section "Start of Main Program".
+#
+# To completely remove the Main Menu and its code:
+#    1) Delete the call to function f_menu_main_all_menus under
+#       "Run Main Code" in Section "Start of Main Program".
+#    2) Add calls to desired functions under "Run Main Code"
+#       in Section "Start of Main Program".
+#    3) Delete the function f_menu_main_all_menus.
+#    4) Delete "Menu Choice Options" in this script located under
+#       Section "Customize Menu choice options below".
+#       The "Menu Choice Options" lines begin with "#@@".
+#
+# +----------------------------------------+
 # |           Code Change History          |
 # +----------------------------------------+
 #
-## Code Notes
-##
-## To disable the [ OPTION ] --update -u to update the script:
-##    1) Comment out the call to function fdl_download_missing_scripts in
-##       Section "Start of Main Program".
-##
-## To completely delete the [ OPTION ] --update -u to update the script:
-##    1) Delete the call to function fdl_download_missing_scripts in
-##       Section "Start of Main Program".
-##    2) Delete all functions beginning with "f_dl"
-##    3) Delete instructions to update script in Section "Help and Usage".
-##
-## To disable the Main Menu:
-##    1) Comment out the call to function f_menu_main under "Run Main Code"
-##       in Section "Start of Main Program".
-##    2) Add calls to desired functions under "Run Main Code"
-##       in Section "Start of Main Program".
-##
-## To completely remove the Main Menu and its code:
-##    1) Delete the call to function f_menu_main under "Run Main Code" in
-##       Section "Start of Main Program".
-##    2) Add calls to desired functions under "Run Main Code"
-##       in Section "Start of Main Program".
-##    3) Delete the function f_menu_main.
-##    4) Delete "Menu Choice Options" in example_library.lib located under
-##       Section "Customize Menu choice options below".
-##       The "Menu Choice Options" lines begin with "#@@".
-##
 ## Code Change History
 ##
 ## (After each edit made, please update Code History and VERSION.)
+##
+## 2024-02-25 *fdl_dwnld_file_from_local_repository
+##             fdl_dwnld_file_from_web_site improved informational messages.
+##            *fdl_mount_local improved user message.
+##            *Section "Main Program" added the deleting of file $FILE_LIST
+##             after checking for missing files. It was not getting deleted
+##             when script used CLI parameters that did not display a menu.
 ##
 ## 2024-02-23 *f_check_version updated to latest version.
 ##            *fdl_download_missing_scripts
@@ -287,11 +291,15 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 # |     Function f_display_common      |
 # +------------------------------------+
 #
-#     Rev: 2021-03-31
-#  Inputs: $1=UI - "text", "dialog" or "whiptail" the preferred user-interface.
-#          $2=Delimiter of text to be displayed.
-#          $3="NOK", "OK", or null [OPTIONAL] to control display of "OK" button.
-#          $4=Pause $4 seconds [OPTIONAL]. If "NOK" then pause to allow text to be read.
+#     Rev: 2024-02-24
+#  Inputs: $1 - "text", "dialog" or "whiptail" the command-line user-interface in use.
+#          $2 - Delimiter of text to be displayed.
+#          $3 - [OPTIONAL] to control display of prompt to continue.
+#                          null (Default) - "OK" button or text prompt, display until either Enter key or "OK" button is pressed.
+#                          "OK"           - "OK" button or text prompt, display until either Enter key or "OK" button is pressed.
+#                          "NOK"          - No "OK" button or text prompt, display for $3 seconds before continuing automatically.
+#          $4 - [OPTIONAL] to control pause duration. Only used if $3="NOK".
+#                          $4 seconds pause to allow text to be read before continuing automatically.
 #          THIS_DIR, THIS_FILE, VERSION.
 #    Uses: X.
 # Outputs: None.
@@ -299,6 +307,10 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 # Summary: Display lines of text beginning with a given comment delimiter.
 #
 # Dependencies: f_message.
+#
+# PLEASE NOTE: RENAME THIS FUNCTION WITHOUT SUFFIX "_TEMPLATE" AND COPY
+#              THIS FUNCTION INTO ANY SCRIPT WHICH DEPENDS ON THE
+#              LIBRARY FILE "common_bash_function.lib".
 #
 f_display_common () {
       #
@@ -803,10 +815,8 @@ f_check_version () {
       #
       # Create list of files to update and write to temporary file, FILE_LIST.
       #
-      #echo "[ FILE NAME1 GOES HERE ]"  > $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
-      #echo "[ FILE NAME2 GOES HERE ]" >> $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
-      #echo "[ FILE NAME3 GOES HERE ]" >> $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
-      #echo "[ FILE NAME4 GOES HERE ]" >> $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
+      echo "filename-tagger.sh"  > $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
+      echo "common_bash_function.lib" >> $FILE_LIST  # <<<--- INSERT ACTUAL FILE NAME HERE.
       #
       f_version_compare $1 "$SERVER_DIR" "$MP_DIR" "$LOCAL_REPO_DIR" "$FILE_TO_COMPARE" "$VERSION" "$FILE_LIST" "$3"
       #
@@ -822,7 +832,7 @@ f_check_version () {
 # |  Function fdl_dwnld_file_from_web_site |
 # +----------------------------------------+
 #
-#     Rev: 2024-02-21
+#     Rev: 2024-02-25
 #  Inputs: $1 - GitHub Repository
 #          $2 - file name to download.
 #    Uses: None.
@@ -850,7 +860,15 @@ fdl_dwnld_file_from_web_site () {
             echo ">>> wget download failed <<<"
             echo ">>>>>>>>>>>>>><<<<<<<<<<<<<<"
             echo
-            echo "Error copying from Web Repository file: \"$2.\""
+            echo "Error copying file: \"$2.\""
+            echo
+            echo "from GitHub Repository:"
+            echo "$WEB_REPOSITORY_URL"
+            echo
+            echo -e "Warning: If the Github Repository is \"Private\","
+            echo "         then anonymous downloads are not permitted."
+            echo
+            echo ">>>>>>>>>>>>>><<<<<<<<<<<<<<"
             echo
       fi
       #
@@ -860,7 +878,7 @@ fdl_dwnld_file_from_web_site () {
 # | Function fdl_dwnld_file_from_local_repository |
 # +-----------------------------------------------+
 #
-#     Rev: 2024-02-21
+#     Rev: 2024-02-25
 #  Inputs: $1 - Local Repository Directory.
 #          $2 - File to download.
 #    Uses: TEMP_FILE.
@@ -886,7 +904,12 @@ fdl_dwnld_file_from_local_repository () {
          echo ">>> File Copy Error from Local Repository <<<"
          echo ">>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<"
          echo
-         echo -e "Error copying from Local Repository file: \"$2.\""
+         echo -e "Error copying file: \"$2.\""
+         echo
+         echo "from Local Repository:"
+         echo "$LOCAL_REPO_DIR"
+         echo
+         echo ">>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<"
          echo
          ERROR=1
       fi
@@ -903,7 +926,7 @@ fdl_dwnld_file_from_local_repository () {
 # |       Function fdl_mount_local      |
 # +-------------------------------------+
 #
-#     Rev: 2024-02-21
+#     Rev: 2024-02-25
 #  Inputs: $1 - Server Directory.
 #          $2 - Local Mount Point Directory
 #          TEMP_FILE
@@ -931,7 +954,7 @@ fdl_mount_local () {
       else
          # Mount failed, Do you want to try again?
          DEFAULT_ANS="Y"
-         QUES_STR="Failed to mount\n\nShare-point: $1\nonto\nMount-point: $2n\nTry another password to mount $1?"
+         QUES_STR="Failed to mount\n\nShare-point:\n$1\n\nonto\n\nMount-point:\n$2\n\nTry another password to mount $1?"
          #
          clear  # Blank screen.
          #
@@ -1283,21 +1306,24 @@ fdl_download_missing_scripts () {
 # ***     Start of Main Program      ***
 # **************************************
 # **************************************
-#     Rev: 2021-03-11
+#     Rev: 2024-02-24
 #
 #
 if [ -e $TEMP_FILE ] ; then
    rm $TEMP_FILE
 fi
 #
-clear  # Blank the screen.
+# Blank the screen.
+clear
 #
 echo "Running script $THIS_FILE"
 echo "***   Rev. $VERSION   ***"
 echo
-sleep 1  # pause for 1 second automatically.
+# pause for 1 second automatically.
+sleep 1
 #
-clear # Blank the screen.
+# Blank the screen.
+clear
 #
 #-------------------------------------------------------
 # Detect and download any missing scripts and libraries.
@@ -1333,6 +1359,11 @@ if [ -r  $FILE_DL_LIST ] || [ $ERROR -ne 0 ] ; then
            # process /bin/bash is created using up resources.
 fi
 #
+# Remove FILE_LIST since already checked for missing files/libraries.
+if [ -r  $FILE_LIST ] ; then
+   rm  $FILE_LIST
+fi
+#
 #***************************************************************
 # Process Any Optional Arguments and Set Variables THIS_DIR, GUI
 #***************************************************************
@@ -1343,18 +1374,42 @@ f_script_path
 # Set Temporary file using $THIS_DIR from f_script_path.
 TEMP_FILE=$THIS_DIR/$THIS_FILE"_temp.txt"
 #
+# If command already specifies $GUI, then do not detect UI, but verify that
+# it is an installed and valid UI.
+# i.e. "bash menu.sh dialog" or "bash menu.sh text".
 # Test for Optional Arguments.
 # Also sets variable GUI.
 f_arguments $1 $2
 #
-# If command already specifies GUI, then do not detect GUI.
-# i.e. "bash filename_tagger.sh dialog" or "bash filename_tagger.sh text".
-if [ -z $GUI ] ; then
-   # Test for GUI (Whiptail or Dialog) or pure text environment.
+# Was a UI specified in the command as a passed parameter argument?
+if [ -z "$GUI" ] ; then
+   # No, no UI specified on the command-line.
+   # Set variable GUI.
+   # Detect user-interface environment type, "Whiptail", "Dialog", or pure text environment.
    f_detect_ui
+else
+   case $GUI in
+        whiptail | dialog)
+           # User-interface environment was already specified by user by
+           # an argument, passed-parameter in the command-line.
+           # Verify that argument is an installed, valid UI environment type.
+           command -v $GUI >/dev/null
+           # "&>/dev/null" does not work in Debian distro.
+           # 1=standard messages, 2=error messages, &=both.
+           ERROR=$?
+           # Is $GUI installed?
+           if [ $ERROR -eq 1 ] ; then
+              # No, $GUI is not installed.
+              # Set $GUI to an installed environment.
+              f_detect_ui
+           fi
+           #
+           unset ERROR
+        ;;
+   esac
 fi
 #
-# Final Check of Environment
+# Override detected or selected $GUI for testing purposes.
 #GUI="whiptail"  # Diagnostic line.
 #GUI="dialog"    # Diagnostic line.
 #GUI="text"      # Diagnostic line.
@@ -1374,7 +1429,7 @@ fi
 # fi
 #
 # Test for BASH environment.
-f_test_environment $1
+f_test_environment $GUI
 #
 # If an error occurs, the f_abort() function will be called.
 # trap 'f_abort' 0
