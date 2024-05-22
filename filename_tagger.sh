@@ -20,40 +20,11 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program. If not, see <https://www.gnu.org/licenses/>.
 #
-# +--------------------------------------------------------------------------+
-# |                                                                          |
-# |                 Customize Menu choice options below.                     |
-# |                                                                          |
-# +--------------------------------------------------------------------------+
-#
-# Format: <#@@> <Menu Option> <#@@> <Description of Menu Option> <#@@> <Corresponding function or action or cammand>
-#
-#! +--------------------------------------------------------------+
-#! | Start Listing File Tagger Menu                               |
-#! |               (Required header, do not delete).              |
-#! +--------------------------------------------------------------+
-#
-#@@Exit#@@Exit this menu.#@@break
-#
-#@@Tag#@@Add tags to file names.#@@f_tagger^$GUI^$TARGET_DIR
-#
-#@@Untag#@@Delete tags to file names.#@@f_untagger^$GUI^$TARGET_DIR
-#
-#@@About#@@Version information of this script.#@@f_about^$GUI
-#
-#@@Code History#@@Display code change history of this script.#@@f_code_history^$GUI
-#
-#@@Version Update#@@Check for updates to this script and download.#@@f_check_version^$GUI
-#
-#@@Help#@@Display help message.#@@f_help_message^$GUI
-#
-#  End Listing File Tagger Menu (Required line, do not delete).
-#
 # +----------------------------------------+
 # |        Default Variable Values         |
 # +----------------------------------------+
 #
-VERSION="2024-02-25 23:19"
+VERSION="2024-05-22 16:04"
 THIS_FILE=$(basename $0)
 FILE_TO_COMPARE=$THIS_FILE
 TEMP_FILE=$THIS_FILE"_temp.txt"
@@ -222,6 +193,9 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 ##
 ## (After each edit made, please update Code History and VERSION.)
 ##
+## 2024-05-22 *f_tagger, f_untagger bug fixed with bad call to non-existant
+##             function f_select_target_directory changed to f_select_dir.
+##
 ## 2024-02-25 *fdl_dwnld_file_from_local_repository
 ##             fdl_dwnld_file_from_web_site improved informational messages.
 ##            *fdl_mount_local improved user message.
@@ -286,6 +260,35 @@ FILE_DL_LIST=$THIS_FILE"_file_dl_temp.txt"
 ## 2020-11-18 *Alpha Release. Crude working code.
 ##
 ## 2020-11-12 *Start researching how to do it and coding.
+#
+# +--------------------------------------------------------------------------+
+# |                                                                          |
+# |                 Customize Menu choice options below.                     |
+# |                                                                          |
+# +--------------------------------------------------------------------------+
+#
+# Format: <#@@> <Menu Option> <#@@> <Description of Menu Option> <#@@> <Corresponding function or action or cammand>
+#
+#! +--------------------------------------------------------------+
+#! | Start Listing File Tagger Menu                               |
+#! |               (Required header, do not delete).              |
+#! +--------------------------------------------------------------+
+#
+#@@Exit#@@Exit this menu.#@@break
+#
+#@@Tag#@@Add tags to file names.#@@f_tagger^$GUI^$TARGET_DIR
+#
+#@@Untag#@@Delete tags to file names.#@@f_untagger^$GUI^$TARGET_DIR
+#
+#@@About#@@Version information of this script.#@@f_about^$GUI
+#
+#@@Code History#@@Display code change history of this script.#@@f_code_history^$GUI
+#
+#@@Version Update#@@Check for updates to this script and download.#@@f_check_version^$GUI
+#
+#@@Help#@@Display help message.#@@f_help_message^$GUI
+#
+#  End Listing File Tagger Menu (Required line, do not delete).
 #
 # +------------------------------------+
 # |     Function f_display_common      |
@@ -516,7 +519,7 @@ f_tagger () {
       TARGET_DIR=$2
       #
       if [ -z $TARGET_DIR ] ; then
-         f_select_target_directory $1
+         f_select_dir $1 "Tag Files in Directory" "$THIS_DIR" 1
       fi
       #
       if [ $ERROR -eq 1 ] ; then
@@ -657,7 +660,7 @@ f_untagger () {
       #
       if [ -z $TARGET_DIR ] ;
        then
-         f_select_target_directory $1
+         f_select_dir $1 "UnTag Files in Directory" "$THIS_DIR" 1
       fi
       #
       if [ $ERROR -eq 1 ] ; then
